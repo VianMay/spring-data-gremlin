@@ -1,6 +1,7 @@
 package org.springframework.data.gremlin.query.execution;
 
-import com.tinkerpop.blueprints.Element;
+import com.google.common.collect.Lists;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.springframework.data.gremlin.query.AbstractGremlinQuery;
 import org.springframework.data.gremlin.query.CompositeResult;
 import org.springframework.data.gremlin.repository.GremlinGraphAdapter;
@@ -9,7 +10,6 @@ import org.springframework.data.gremlin.schema.GremlinSchemaFactory;
 import org.springframework.data.gremlin.utils.GenericsUtil;
 import org.springframework.data.repository.query.DefaultParameters;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +58,8 @@ public abstract class AbstractGremlinExecution {
 
     protected Map<String, Object> elementToMap(Element element) {
         Map<String, Object> map = new HashMap<String, Object>();
-        for (String key : element.getPropertyKeys()) {
-            map.put(key, element.getProperty(key));
+        for (String key : element.keys()) {
+            map.put(key, element.value(key));
         }
         return map;
     }
@@ -69,7 +69,7 @@ public abstract class AbstractGremlinExecution {
 
         Iterable<Element> result = (Iterable<Element>) query.runQuery(parameters, values);
 
-        List<Object> objects = new ArrayList<Object>();
+        List<Object> objects = Lists.newArrayList();
         if (mappedType.isAssignableFrom(Map.class)) {
 
             for (Element element : result) {

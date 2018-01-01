@@ -26,4 +26,11 @@ public class GremlinRepositoryConfigExtension extends RepositoryConfigurationExt
     }
 
 
+    @Override
+    public String getRepositoryFactoryBeanClassName()
+    {
+        //TODO FBALICCHIA
+
+        return null;
+    }
 }

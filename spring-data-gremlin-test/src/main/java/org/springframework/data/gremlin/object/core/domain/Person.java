@@ -7,8 +7,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static com.tinkerpop.blueprints.Direction.IN;
-import static com.tinkerpop.blueprints.Direction.OUT;
+import static org.apache.tinkerpop.gremlin.structure.Direction.OUT;
 import static org.springframework.data.gremlin.annotation.Enumerated.EnumeratedType.STRING;
 
 @Vertex
@@ -246,7 +245,9 @@ public class Person extends Bipod<Area> {
         }
 
         Person person = (Person) o;
-
+        if (getId() != null ? !getId().equals(person.getId()) : person.getId() != null) {
+            return false;
+        }
         if (firstName != null ? !firstName.equals(person.firstName) : person.firstName != null) {
             return false;
         }

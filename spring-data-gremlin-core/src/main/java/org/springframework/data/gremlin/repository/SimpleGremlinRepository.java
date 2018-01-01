@@ -1,9 +1,9 @@
 package org.springframework.data.gremlin.repository;
 
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Element;
-import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Vertex;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
+import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -47,20 +48,6 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
         this.schema = schema;
     }
 
-    //    @Transactional(readOnly = false)
-    //    public Element create(Graph graph, final T object) {
-    //        final Element element = graphAdapter.createVertex(graph, schema.getClassName());
-    //        schema.copyToGraph(graphAdapter, element, object);
-    //        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-    //            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-    //                @Override
-    //                public void afterCommit() {
-    //                    schema.setObjectId(object, element);
-    //                }
-    //            });
-    //        }
-    //        return element;
-    //    }
 
     @Transactional(readOnly = false)
     private Element create(Graph graph, final T object, Object... noCascade) {
@@ -106,9 +93,9 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
         } else {
             Element element;
             if (schema.isVertexSchema()) {
-                element = graph.getVertex(schema.decodeId(id));
+                element = graphAdapter.getVertex(schema.decodeId(id));
             } else if (schema.isEdgeSchema()) {
-                element = graph.getEdge(schema.decodeId(id));
+                element = graphAdapter.getEdge(schema.decodeId(id));
             } else {
                 throw new IllegalStateException("Schema is neither EDGE nor VERTEX!");
             }
@@ -123,6 +110,42 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
     @Override
     public <S extends T> S save(S entity) {
         return save(entity, new Object[0]);
+    }
+
+    @Transactional(readOnly = false)
+    @Override
+    public <S extends T> Iterable<S> saveAll(Iterable<S> entities)
+    {
+        for (S s : entities) {
+            save(s);
+        }
+        return entities;
+    }
+
+    @Override
+    public Optional<T> findById(String id)
+    {
+        T object = null;
+        Element element;
+        if (schema.isVertexSchema()) {
+            element = graphAdapter.findVertexById(id);
+        } else if (schema.isEdgeSchema()) {
+            element = graphAdapter.findEdgeById(id);
+        } else {
+            throw new IllegalStateException("Schema is neither VERTEX nor EDGE!");
+        }
+
+        if (element != null) {
+            object = schema.loadFromGraph(graphAdapter, element);
+        }
+
+        return Optional.of(object);
+    }
+
+    @Override
+    public boolean existsById(String s)
+    {
+        return false;
     }
 
     @Transactional(readOnly = false)
@@ -142,7 +165,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
                     @Override
                     public void afterCommit() {
                         if (!graphAdapter.isValidId(schema.getObjectId(s))) {
-//                            throw dbf.getForceRetryException();
+                            //                            throw dbf.getForceRetryException();
                         }
                     }
                 });
@@ -152,52 +175,21 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
 
     }
 
-    @Transactional(readOnly = false)
-    @Override
-    public <S extends T> Iterable<S> save(Iterable<S> iterable) {
-        for (S s : iterable) {
-            save(s);
-        }
-        return iterable;
-    }
-
-    @Override
-    public T findOne(String id) {
-        T object = null;
-        Element element;
-        if (schema.isVertexSchema()) {
-            element = graphAdapter.findVertexById(id);
-        } else if (schema.isEdgeSchema()) {
-            element = graphAdapter.findEdgeById(id);
-        } else {
-            throw new IllegalStateException("Schema is neither VERTEX nor EDGE!");
-        }
-
-        if (element != null) {
-            object = schema.loadFromGraph(graphAdapter, element);
-        }
-
-        return object;
-    }
-
-    @Override
-    public boolean exists(String id) {
-        return count() == 1;
-    }
-
     @Override
     public Iterable<T> findAll() {
         throw new NotImplementedException("Finding all vertices in Graph databases does not really make sense. So, it hasn't been implemented.");
     }
 
     @Override
-    public Iterable<T> findAll(Iterable<String> iterable) {
+    public Iterable<T> findAllById(Iterable<String> iterable)
+    {
         Set<T> objects = new HashSet<T>();
         for (String id : iterable) {
-            objects.add(findOne(id));
+            objects.add(findById(id).orElse(null));
         }
         return objects;
     }
+
 
     @Override
     public long count() {
@@ -206,26 +198,29 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
 
     @Transactional(readOnly = false)
     @Override
-    public void delete(String id) {
+    public void deleteById(String id)
+    {
         if (schema.isVertexSchema()) {
             Vertex v = graphAdapter.findVertexById(id);
-            dbf.graph().removeVertex(v);
+            v.remove();;
         } else if (schema.isEdgeSchema()) {
             Edge v = graphAdapter.findEdgeById(id);
-            dbf.graph().removeEdge(v);
+            v.remove();
         }
+
     }
 
     @Transactional(readOnly = false)
     @Override
     public void delete(T t) {
-        delete(schema.getObjectId(t));
+        schema.getObjectId(t);
     }
 
-    @Transactional(readOnly = false)
     @Override
-    public void delete(Iterable<? extends T> iterable) {
-        for (T t : iterable) {
+    @Transactional(readOnly = false)
+    public void deleteAll(Iterable<? extends T> entities)
+    {
+        for (T t : entities) {
             delete(t);
         }
     }

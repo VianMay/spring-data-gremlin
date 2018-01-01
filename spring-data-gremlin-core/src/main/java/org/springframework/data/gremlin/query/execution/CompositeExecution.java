@@ -1,6 +1,6 @@
 package org.springframework.data.gremlin.query.execution;
 
-import com.tinkerpop.blueprints.Vertex;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.springframework.data.gremlin.query.AbstractGremlinQuery;
 import org.springframework.data.gremlin.query.CompositeResult;
 import org.springframework.data.gremlin.repository.GremlinGraphAdapter;
@@ -8,7 +8,6 @@ import org.springframework.data.gremlin.schema.GremlinSchema;
 import org.springframework.data.gremlin.schema.GremlinSchemaFactory;
 import org.springframework.data.repository.query.DefaultParameters;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -39,10 +38,7 @@ public class CompositeExecution extends AbstractGremlinExecution {
             throw new IllegalArgumentException("The query resulted in multiple Vertices. Expected only one result for this Execution.");
         }
 
-        Map<String, Object> map = new HashMap<String, Object>();
-        for (String key : vertex.getPropertyKeys()) {
-            map.put(key, vertex.getProperty(key));
-        }
+        Map<String, Object> map = elementToMap(vertex);
 
         Class<?> mappedType = query.getQueryMethod().getReturnedObjectType();
         GremlinSchema mapper = schemaFactory.getSchema(mappedType);
