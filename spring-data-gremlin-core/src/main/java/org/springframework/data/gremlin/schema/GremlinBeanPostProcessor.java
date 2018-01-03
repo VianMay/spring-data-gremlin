@@ -1,6 +1,7 @@
 package org.springframework.data.gremlin.schema;
 
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -61,7 +62,7 @@ public class GremlinBeanPostProcessor implements BeanFactoryPostProcessor, Order
 
         this.schemaGenerator = schemaGenerator;
         if (!StringUtils.isEmpty(baseClasspath)) {
-            Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage(baseClasspath)).setScanners(new TypeAnnotationsScanner()));
+            Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage(baseClasspath)).setScanners(new TypeAnnotationsScanner(),new SubTypesScanner()));
 
             Set<Class<?>> vertexClasses = reflections.getTypesAnnotatedWith(annotatedSchemaGenerator.getVertexAnnotationType());
             this.vertexClasses.addAll(vertexClasses);

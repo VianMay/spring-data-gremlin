@@ -13,14 +13,6 @@
 
   <build>
     <finalName>spring-data-gremlin-janus-${project.version}</finalName>
-    <plugins>
-      <!-- Generate test jar too -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <version>2.4</version>
-      </plugin>
-    </plugins>
   </build>
   <dependencies>
     <dependency>
@@ -41,7 +33,7 @@
     <dependency>
       <groupId>org.janusgraph</groupId>
       <artifactId>janusgraph-core</artifactId>
-      <version>0.2.0</version>
+      <version>${janus.version}</version>
     </dependency>
   </dependencies>
 </project>

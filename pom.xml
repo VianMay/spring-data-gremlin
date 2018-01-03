@@ -43,6 +43,8 @@
     <commons.collections.version>4.1</commons.collections.version>
     <commons-lang3.version>3.7</commons-lang3.version>
     <reflection.version>0.9.11</reflection.version>
+    <guava.version>23.0</guava.version>
+    <janus.version>0.2.0</janus.version>
 
   </properties>
 
@@ -67,6 +69,11 @@
           <source>${java.version}</source>
           <target>${java.version}</target>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.4</version>
       </plugin>
     </plugins>
   </build>
@@ -148,6 +155,11 @@
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
       <version>${reflection.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guava.version}</version>
     </dependency>
   </dependencies>
 </project>
