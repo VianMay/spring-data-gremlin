@@ -34,7 +34,7 @@ public class SingleEntityExecution extends AbstractGremlinExecution {
         if (vertices.size() > 1) {
             throw new IllegalArgumentException("The query resulted in multiple Vertices. Expected only one result for this Execution.");
         }
-        else if(vertices.size() == 1) {
+        else if (vertices.size() == 1) {
             vertex = vertices.get(0);
         }
         else {
@@ -42,13 +42,10 @@ public class SingleEntityExecution extends AbstractGremlinExecution {
         }
 
         if (mappedType.isAssignableFrom(Map.class)) {
-
-            Map<String, Object> map = elementToMap(vertex);
-            return map;
+            return elementToMap(vertex);
         } else {
             GremlinSchema mapper = schemaFactory.getSchema(mappedType);
             return mapper.loadFromGraph(graphAdapter, vertex);
-
         }
     }
 }

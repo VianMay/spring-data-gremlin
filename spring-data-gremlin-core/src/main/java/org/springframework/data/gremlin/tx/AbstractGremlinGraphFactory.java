@@ -15,7 +15,7 @@ import javax.annotation.PostConstruct;
 public abstract class AbstractGremlinGraphFactory<T extends Graph> implements GremlinGraphFactory<T> {
 
     /** The logger. */
-    private static Logger LOGGER = LoggerFactory.getLogger(AbstractGremlinGraphFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractGremlinGraphFactory.class);
 
     /** The username. */
     protected String username = DEFAULT_USERNAME;
@@ -51,13 +51,6 @@ public abstract class AbstractGremlinGraphFactory<T extends Graph> implements Gr
      * Creates a Graph Pool
      */
     protected abstract void createPool();
-
-    /**
-     * Open the Graph.
-     *
-     * @return the &gt;T&lt; Graph
-     */
-    public abstract T openGraph();
 
     @Override
     public void shutdown(T graph) {

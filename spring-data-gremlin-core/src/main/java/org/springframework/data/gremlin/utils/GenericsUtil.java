@@ -1,6 +1,7 @@
 package org.springframework.data.gremlin.utils;
 
 import java.lang.reflect.*;
+import java.util.Optional;
 
 /**
  * A utility class for finding the generic types of Classes, Fields and Methods.
@@ -23,7 +24,9 @@ public class GenericsUtil {
             ParameterizedType paramType = (ParameterizedType) type;
             Type[] genericTypes = paramType.getActualTypeArguments();
             if (genericTypes == null || (required > 0 && genericTypes.length != required)) {
-                throw new IllegalStateException(type.getTypeName() + " does not provide a generic type as required. Wanted " + required + " generic types, but found " + genericTypes.length);
+                throw new IllegalStateException(type.getTypeName() + " does not provide a generic type as required. Wanted " +
+                        required + " generic types, but found " +
+                        Optional.ofNullable(genericTypes).map(gt -> gt.length).orElse(0));
             }
             Class<?>[] generics = new Class<?>[genericTypes.length];
             for (int i = 0; i < generics.length; i++) {
@@ -50,7 +53,8 @@ public class GenericsUtil {
             }
             return generics;
         }
-        throw new IllegalStateException("Could not determine generic types for " + type.getTypeName());
+        throw new IllegalStateException("Could not determine generic types for " +
+                Optional.ofNullable(type).map(Type::getTypeName).orElse("null"));
     }
 
     /**

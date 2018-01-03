@@ -49,7 +49,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
     }
 
 
-    @Transactional(readOnly = false)
+    @Transactional
     private Element create(Graph graph, final T object, Object... noCascade) {
         Element element;
         if (schema.isVertexSchema()) {
@@ -84,7 +84,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
         return element;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public T save(Graph graph, T object, Object... noCascade) {
 
         String id = schema.getObjectId(object);
@@ -112,7 +112,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
         return save(entity, new Object[0]);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public <S extends T> Iterable<S> saveAll(Iterable<S> entities)
     {
@@ -148,7 +148,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
         return false;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public <S extends T> S save(final S s, final Object... noCascade) {
 
@@ -196,7 +196,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
         throw new NotImplementedException("Counting all vertices in Gremlin has not been implemented.");
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public void deleteById(String id)
     {
@@ -210,19 +210,17 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
 
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public void delete(T t) {
         schema.getObjectId(t);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void deleteAll(Iterable<? extends T> entities)
     {
-        for (T t : entities) {
-            delete(t);
-        }
+        entities.forEach(this::delete);
     }
 
     @Override

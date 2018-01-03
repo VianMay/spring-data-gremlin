@@ -231,12 +231,6 @@ public class DefaultSchemaGenerator extends BasicSchemaGenerator implements Anno
         return dynamicClassName;
     }
 
-    private PropertyOverride checkPropertyOverride(Field embeddedField, Field field) {
-
-        PropertyOverride propertyOverride = embeddedField.getAnnotation(PropertyOverride.class);
-        return checkPropertyOverride(field, propertyOverride);
-    }
-
     private PropertyOverride checkPropertyOverride(Field field, PropertyOverride propertyOverride) {
         if (propertyOverride != null && !StringUtils.isEmpty(propertyOverride.name()) && propertyOverride.property() != null) {
             if (field.getName().equals(propertyOverride.name())) {
