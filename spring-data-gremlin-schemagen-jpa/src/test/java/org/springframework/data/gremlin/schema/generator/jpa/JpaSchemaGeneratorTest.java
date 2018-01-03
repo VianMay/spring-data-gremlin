@@ -15,10 +15,10 @@ import static org.junit.Assert.*;
  */
 public class JpaSchemaGeneratorTest {
 
-    JpaSchemaGenerator generator;
+    private JpaSchemaGenerator generator;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         generator = new JpaSchemaGenerator();
         generator.setVertexClasses(TestEntity.class, LinkedTestEntity.class);
         generator.setEmbeddedClasses(EmbeddedTestEntity.class, MultiEmbeddedTestEntity.class);
@@ -45,9 +45,9 @@ public class JpaSchemaGeneratorTest {
         assertTrue(schema.getProperty("linkedEntity") instanceof GremlinLinkProperty);
         assertEquals(LinkedTestEntity.class, schema.getProperty("linkedEntity").getType());
 
-        assertTrue(propNames.contains("embeddedBla"));
-        assertTrue(propNames.contains("embeddedDate"));
-        assertTrue(propNames.contains("multiEmbedded"));
+        assertTrue(propNames.contains("testentity_embeddedTestEntity_embeddedBla"));
+        assertTrue(propNames.contains("testentity_embeddedTestEntity_embeddedDate"));
+        assertTrue(propNames.contains("testentity_embeddedTestEntity_multiEmbedded"));
         assertTrue(propNames.contains("embeddedValue"));
 
         assertFalse(propNames.contains("id"));
