@@ -15,9 +15,6 @@ import static org.junit.Assert.assertNotNull;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class AbstractAddressRepositoryTest extends BaseRepositoryTest {
 
-    @Autowired
-    protected AddressRepository addressRepository;
-
     @Test
     public void should_find_addresses() throws Exception {
         List<Address> addresses = new ArrayList<Address>();

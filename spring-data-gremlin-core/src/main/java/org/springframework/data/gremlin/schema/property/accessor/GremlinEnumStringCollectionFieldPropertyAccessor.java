@@ -74,7 +74,7 @@ public class GremlinEnumStringCollectionFieldPropertyAccessor extends AbstractGr
             for (String name : array.split(",")) {
                 for (Enum num : numnum.getEnumConstants()) {
                     if (useOrdinal) {
-                        int ordinal = Integer.valueOf(name);
+                        int ordinal = Integer.parseInt(name);
                         if (ordinal == num.ordinal()) {
                             collection.add(num);
                         }

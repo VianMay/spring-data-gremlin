@@ -15,11 +15,8 @@ import static org.junit.Assert.assertNotNull;
 @SuppressWarnings("SpringJavaAutowiringInspection")
 public abstract class AbstractAddressRepositoryTest extends BaseRepositoryTest {
 
-    @Autowired
-    protected AddressRepository addressRepository;
-
     @Test
-    public void should_find_addresses() throws Exception {
+    public void should_find_addresses() {
         List<Address> addresses = new ArrayList<Address>();
 
         CollectionUtils.addAll(addresses, addressRepository.findAll());
@@ -33,7 +30,7 @@ public abstract class AbstractAddressRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void should_save_and_find_embedded_country() throws Exception {
+    public void should_save_and_find_embedded_country() {
         List<Address> addresses = new ArrayList<>();
 
         CollectionUtils.addAll(addresses, addressRepository.findAll());

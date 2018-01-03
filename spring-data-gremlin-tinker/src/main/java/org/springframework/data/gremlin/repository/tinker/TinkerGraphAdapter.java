@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 public class TinkerGraphAdapter extends GremlinGraphAdapter<TinkerGraph> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TinkerGraphAdapter.class);
-
     @Override
     @Transactional(readOnly = false)
     public Vertex createVertex(TinkerGraph graph, String className) {

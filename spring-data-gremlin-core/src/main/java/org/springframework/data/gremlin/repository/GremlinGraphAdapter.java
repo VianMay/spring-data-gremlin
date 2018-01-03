@@ -25,17 +25,16 @@ public class GremlinGraphAdapter<G extends Graph> {
     @Autowired
     protected GremlinGraphFactory<G> graphFactory;
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Vertex createVertex(String className) {
         G graph = graphFactory.graph();
         return createVertex(graph, className);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Vertex createVertex(G graph, String className) {
         LOGGER.info("CREATING VERTEX: " + className);
-        Vertex vertex = graph.addVertex(className);
-        return vertex;
+        return graph.addVertex(className);
     }
 
     @Transactional(readOnly = true)
@@ -85,8 +84,6 @@ public class GremlinGraphAdapter<G extends Graph> {
 
     /**
      * Assumes the Vertex exists
-     * @param id
-     * @return
      */
     @Transactional(readOnly = true)
     public Vertex getVertex(String id) {
@@ -98,8 +95,6 @@ public class GremlinGraphAdapter<G extends Graph> {
 
     /**
      * Assumes the Edge exists
-     * @param id
-     * @return
      */
     @Transactional(readOnly = true)
     public Edge getEdge(String id) {
@@ -109,24 +104,23 @@ public class GremlinGraphAdapter<G extends Graph> {
         return graphFactory.graph().edges(id).next();
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Vertex createVertex(GremlinSchema schema) {
         return createVertex(schema.getClassName());
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public Edge addEdge(Object o, Vertex outVertex, Vertex inVertex, String name) {
         LOGGER.debug("Creating edge " + outVertex + " -> " + inVertex + "...");
-        Edge edge = outVertex.addEdge(name, inVertex);
-        return edge;
+        return outVertex.addEdge(name, inVertex);
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void removeEdge(Edge edge) {
         edge.remove();
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     public void removeVertex(Vertex vertexToDelete) {
         vertexToDelete.remove();
     }

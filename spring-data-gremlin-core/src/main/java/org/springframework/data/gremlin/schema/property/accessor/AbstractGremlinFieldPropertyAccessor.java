@@ -28,11 +28,9 @@ public abstract class AbstractGremlinFieldPropertyAccessor<V> implements Gremlin
 
         if (embeddedAccessor != null) {
             Object parentObj = embeddedAccessor.get(object);
-            if (parentObj == null) {
-                if (force) {
-                    parentObj = embeddedAccessor.newInstance();
-                    embeddedAccessor.set(object, parentObj);
-                }
+            if (parentObj == null && force) {
+                parentObj = embeddedAccessor.newInstance();
+                embeddedAccessor.set(object, parentObj);
             }
             object = parentObj;
         }

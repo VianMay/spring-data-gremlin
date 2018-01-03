@@ -16,7 +16,6 @@ import org.springframework.data.gremlin.schema.generator.DefaultSchemaGenerator;
 import org.springframework.data.gremlin.schema.generator.SchemaGenerator;
 import org.springframework.data.gremlin.schema.generator.SchemaGeneratorException;
 import org.springframework.data.gremlin.schema.property.GremlinDynamicProperty;
-import org.springframework.data.gremlin.schema.property.GremlinProperty;
 import org.springframework.data.gremlin.schema.property.GremlinRelatedProperty;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -26,8 +25,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * A BeanFactoryPostProcessor for generating {@link GremlinSchema}s and registering them with Spring.
@@ -114,28 +111,22 @@ public class GremlinBeanPostProcessor implements BeanFactoryPostProcessor, Order
     public void init() {
 
         // For each of the properties of each of the Schemas, assign the related Schema to properties which are of type related.
-        for (Class<?> cls : schemaMap.keySet()) {
-            GremlinSchema<?> schema = schemaMap.get(cls);
-            schema.getProperties().stream().filter(new Predicate<GremlinProperty>() {
-                @Override
-                public boolean test(GremlinProperty property) {return property instanceof GremlinRelatedProperty;}
-            }).forEach(new Consumer<GremlinProperty>() {
-                @Override
-                public void accept(GremlinProperty property) {
-                    GremlinSchema<?> relatedSchema;
-                    if (property instanceof GremlinDynamicProperty) {
-                        GremlinDynamicProperty dynamicProperty = (GremlinDynamicProperty) property;
-                        relatedSchema = schemaGenerator.generateDynamicSchema(dynamicProperty.getRelatedClassName(), dynamicProperty.getType());
-                    } else {
-                        relatedSchema = schemaMap.get(property.getType());
-                    }
-                    if (relatedSchema != null) {
-                        ((GremlinRelatedProperty) property).setRelatedSchema(relatedSchema);
-                    }
-                }
-            });
-
-        }
+        schemaMap.forEach((cls, schema) -> {
+            schema.getProperties().stream()
+                    .filter(property -> property instanceof GremlinRelatedProperty)
+                    .forEach(property -> {
+                        GremlinSchema<?> relatedSchema;
+                        if (property instanceof GremlinDynamicProperty) {
+                            GremlinDynamicProperty dynamicProperty = (GremlinDynamicProperty) property;
+                            relatedSchema = schemaGenerator.generateDynamicSchema(dynamicProperty.getRelatedClassName(), dynamicProperty.getType());
+                        } else {
+                            relatedSchema = schemaMap.get(property.getType());
+                        }
+                        if (relatedSchema != null) {
+                            ((GremlinRelatedProperty) property).setRelatedSchema(relatedSchema);
+                        }
+                    });
+        });
     }
 
     private void generateSchemasFromEntities(Set<Class<?>> classes) {
@@ -156,10 +147,7 @@ public class GremlinBeanPostProcessor implements BeanFactoryPostProcessor, Order
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        for (Class<?> cls : schemaMap.keySet()) {
-            GremlinSchema<?> schema = schemaMap.get(cls);
-            beanFactory.registerSingleton("gremlin" + schema.getClassName() + "Schema", schema);
-        }
+        schemaMap.forEach((cls, schema) -> beanFactory.registerSingleton("gremlin" + schema.getClassName() + "Schema", schema));
     }
 
     @Override

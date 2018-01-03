@@ -1,5 +1,6 @@
 package org.springframework.data.gremlin.object.core.domain;
 
+import lombok.Getter;
 import org.springframework.data.gremlin.annotation.Edge;
 import org.springframework.data.gremlin.annotation.FromVertex;
 import org.springframework.data.gremlin.annotation.Id;
@@ -16,12 +17,13 @@ public class Likes {
     @Id
     private String id;
 
+    @Getter
     private Date date = new Date();
 
-    @FromVertex
+    @FromVertex @Getter
     private Person person1;
 
-    @ToVertex
+    @ToVertex @Getter
     private Person person2;
 
     public Likes() {
@@ -31,18 +33,6 @@ public class Likes {
         this.person1 = person1;
         this.person2 = person2;
         person1.getLikes().add(this);
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public Person getPerson1() {
-        return person1;
-    }
-
-    public Person getPerson2() {
-        return person2;
     }
 
     @Override

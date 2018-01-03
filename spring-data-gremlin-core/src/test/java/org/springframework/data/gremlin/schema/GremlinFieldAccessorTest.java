@@ -11,11 +11,11 @@ import static org.junit.Assert.assertEquals;
  * Created by gman on 18/05/15.
  */
 public class GremlinFieldAccessorTest {
-    TestObject obj1;
+    private TestObject obj1;
 
-    GremlinPropertyAccessor primAccessor;
-    GremlinPropertyAccessor strAccessor;
-    GremlinPropertyAccessor objAccessor;
+    private GremlinPropertyAccessor primAccessor;
+    private GremlinPropertyAccessor strAccessor;
+    private GremlinPropertyAccessor objAccessor;
 
     @Before
     public void setUp() throws Exception {
@@ -28,14 +28,14 @@ public class GremlinFieldAccessorTest {
 
 
     @Test
-    public void should_read_all_variables() throws Exception {
+    public void should_read_all_variables() {
         assertEquals(10, primAccessor.get(obj1));
         assertEquals("bla", strAccessor.get(obj1));
         assertEquals(obj1.obj, objAccessor.get(obj1));
     }
 
     @Test
-    public void should_read_null_variables() throws Exception {
+    public void should_read_null_variables() {
         obj1.prim = 0;
         obj1.str = null;
         obj1.obj = null;
@@ -45,7 +45,7 @@ public class GremlinFieldAccessorTest {
     }
 
     @Test
-    public void should_write_all_variables() throws Exception {
+    public void should_write_all_variables() {
         primAccessor.set(obj1, 55);
         strAccessor.set(obj1, "olb");
         TestObject2 obj3 = new TestObject2();
@@ -58,7 +58,7 @@ public class GremlinFieldAccessorTest {
     }
 
     @Test
-    public void should_write_all_nulls() throws Exception {
+    public void should_write_all_nulls() {
         primAccessor.set(obj1, 0);
         strAccessor.set(obj1, null);
         objAccessor.set(obj1, null);
@@ -75,5 +75,5 @@ public class GremlinFieldAccessorTest {
         TestObject2 obj = new TestObject2();
     }
 
-    class TestObject2 { }
+    private static class TestObject2 { }
 }

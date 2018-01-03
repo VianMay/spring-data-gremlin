@@ -39,15 +39,14 @@ public class GremlinDynamicSchema<V> extends GremlinVertexSchema<V> {
 
         if (obj instanceof Map) {
             Map<String, Object> map = (Map) obj;
-            for (String key : map.keySet()) {
+            map.forEach((key, val) -> {
                 if (key.equals("_id_")) {
-                    continue;
+                    return;
                 }
-                Object val = map.get(key);
                 if (val != null) {
                     element.property(key, val);
                 }
-            }
+            });
 
             for (String key : element.keys()) {
                 if (!map.containsKey(key)) {

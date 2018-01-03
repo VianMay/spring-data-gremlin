@@ -58,7 +58,7 @@ public class StringBasedGremlinQuery extends AbstractGremlinQuery {
         String queryString = this.queryString;
 
         for (Parameter param : parameters.getBindableParameters()) {
-            String paramName = param.getName().get();
+            String paramName = param.getName().orElse(null);
             String placeholder = param.getPlaceholder();
             Object val = values[param.getIndex()];
             if (paramName == null) {
@@ -79,7 +79,9 @@ public class StringBasedGremlinQuery extends AbstractGremlinQuery {
 
         try {
 
-            logger.info(GraphUtil.queryToString(graph, (GraphTraversal)engine.eval(queryString, bindings)));
+            if (logger.isInfoEnabled()) {
+                logger.info(GraphUtil.queryToString(graph, (GraphTraversal) engine.eval(queryString, bindings)));
+            }
 
             return engine.eval(queryString, bindings);
         } catch (ScriptException e) {

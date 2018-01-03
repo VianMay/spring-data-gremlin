@@ -16,13 +16,10 @@ import static org.junit.Assert.*;
 public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
-    protected LikesRepository likesRepository;
-
-    @Autowired
     protected LocatedRepository locatedRepository;
 
     @Test
-    public void should_save_simple_edge() throws Exception {
+    public void should_save_simple_edge() {
 
         Likes likes = new Likes(graham, lara);
         graham.getLikes().add(likes);
@@ -36,7 +33,7 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void should_findAll_Located() throws Exception {
+    public void should_findAll_Located() {
         List<Located> located = new ArrayList<Located>();
 
         CollectionUtils.addAll(located, locatedRepository.findAll());
@@ -50,7 +47,7 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void should_deleteAll_Located() throws Exception {
+    public void should_deleteAll_Located() {
         List<Located> located = new ArrayList<Located>();
 
         CollectionUtils.addAll(located, locatedRepository.findAll());
@@ -64,7 +61,7 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void should_save_edge() throws Exception {
+    public void should_save_edge() {
 
         Location loc = locationRepository.save(new Location(35, 165));
         Located located = new Located(new Date(), graham, loc);
@@ -78,7 +75,7 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void should_find_by_referenced() throws Exception {
+    public void should_find_by_referenced() {
 
         Likes likes = new Likes(graham, lara);
         likesRepository.save(likes);
@@ -91,7 +88,7 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void should_find_by_query() throws Exception {
+    public void should_find_by_query() {
 
         Likes likes = new Likes(lara, graham);
         likesRepository.save(likes);

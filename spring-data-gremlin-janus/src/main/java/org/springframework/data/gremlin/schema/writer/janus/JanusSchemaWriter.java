@@ -40,7 +40,7 @@ public class JanusSchemaWriter extends AbstractSchemaWriter {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void writeSchema(GremlinGraphFactory tgf, GremlinSchema<?> schema) throws SchemaWriterException {
         initialise(tgf, schema);
         super.writeSchema(tgf, schema);
@@ -53,7 +53,7 @@ public class JanusSchemaWriter extends AbstractSchemaWriter {
     }
 
     @Override
-    protected Object createVertexClass(GremlinSchema schema) throws Exception {
+    protected Object createVertexClass(GremlinSchema schema) {
         VertexLabel vertexClass = mgmt.getVertexLabel(schema.getClassName());
         if(vertexClass == null) {
             vertexClass = mgmt.makeVertexLabel(schema.getClassName()).make();
@@ -63,7 +63,7 @@ public class JanusSchemaWriter extends AbstractSchemaWriter {
     }
 
     @Override
-    protected Object createEdgeClass(GremlinSchema schema) throws Exception {
+    protected Object createEdgeClass(GremlinSchema schema) {
         EdgeLabel edgeClass = mgmt.getEdgeLabel(schema.getClassName());
         if(edgeClass == null) {
             edgeClass = mgmt.makeEdgeLabel(schema.getClassName()).make();
@@ -84,18 +84,10 @@ public class JanusSchemaWriter extends AbstractSchemaWriter {
     }
 
     @Override
-    protected Object createEdgeClass(String name, Object outVertex, Object inVertex, CARDINALITY cardinality) throws SchemaWriterException {
-
-        Multiplicity multiplicity = Multiplicity.SIMPLE;
-        if (cardinality == CARDINALITY.ONE_TO_ONE) {
-            multiplicity = Multiplicity.ONE2ONE;
-        } else if (cardinality == CARDINALITY.ONE_TO_MANY) {
-            multiplicity = Multiplicity.ONE2MANY;
-        }
+    protected Object createEdgeClass(String name, Object outVertex, Object inVertex, CARDINALITY cardinality) {
 
 //        EdgeLabel edgeLabel = mgmt.makeEdgeLabel(name).directed().multiplicity(multiplicity).make();
-        EdgeLabel edgeLabel = mgmt.getOrCreateEdgeLabel(name);
-        return edgeLabel;
+        return mgmt.getOrCreateEdgeLabel(name);
     }
 
     @Override
