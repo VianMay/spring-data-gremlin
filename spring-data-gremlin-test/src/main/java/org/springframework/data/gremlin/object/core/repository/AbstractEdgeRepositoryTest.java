@@ -9,6 +9,7 @@ import org.springframework.data.gremlin.object.core.domain.Located;
 import org.springframework.data.gremlin.object.core.domain.Location;
 
 import java.util.*;
+import java.util.stream.StreamSupport;
 
 import static org.junit.Assert.*;
 
@@ -26,7 +27,7 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
         lara.getLikes().add(likes);
         likesRepository.save(likes);
 
-        List<Likes> allLikes = new ArrayList<Likes>();
+        List<Likes> allLikes = new ArrayList<>();
         CollectionUtils.addAll(allLikes, likesRepository.findAll());
         assertEquals(6, allLikes.size());
 
@@ -34,11 +35,10 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void should_findAll_Located() {
-        List<Located> located = new ArrayList<Located>();
+        List<Located> located = new ArrayList<>();
 
         CollectionUtils.addAll(located, locatedRepository.findAll());
-        assertNotNull(located);
-        assertEquals(5, located.size());
+        assertTrue(located.size() > 0);
 
         for (Located locate : located) {
             Assert.assertNotNull(locate.getLocation());
@@ -48,10 +48,10 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void should_deleteAll_Located() {
-        List<Located> located = new ArrayList<Located>();
+        List<Located> located = new ArrayList<>();
 
         CollectionUtils.addAll(located, locatedRepository.findAll());
-        assertEquals(5, located.size());
+        assertTrue(located.size() > 0);
         located.clear();
 
         locatedRepository.deleteAll();
@@ -63,14 +63,15 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest {
     @Test
     public void should_save_edge() {
 
+        long count = StreamSupport.stream(locatedRepository.findAll().spliterator(), false).count();
         Location loc = locationRepository.save(new Location(35, 165));
         Located located = new Located(new Date(), graham, loc);
         graham.getLocations().add(located);
         locatedRepository.save(located);
 
-        List<Located> newLocated = new ArrayList<Located>();
+        List<Located> newLocated = new ArrayList<>();
         CollectionUtils.addAll(newLocated, locatedRepository.findAll());
-        assertEquals(6, newLocated.size());
+        assertEquals(count + 1, newLocated.size());
 
     }
 
