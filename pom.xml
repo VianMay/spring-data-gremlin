@@ -63,6 +63,19 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12.4</version>
+        <configuration>
+          <includes>
+            <include>**/Test*.java</include>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+            <include>**/*TestCase.java</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <source>${java.version}</source>
@@ -124,9 +137,9 @@
       <version>${tinkerpop.version}</version>
     </dependency>
     <dependency>
-    <groupId>org.apache.tinkerpop</groupId>
-    <artifactId>gremlin-core</artifactId>
-    <version>${tinkerpop.version}</version>
+      <groupId>org.apache.tinkerpop</groupId>
+      <artifactId>gremlin-core</artifactId>
+      <version>${tinkerpop.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.tinkerpop</groupId>
