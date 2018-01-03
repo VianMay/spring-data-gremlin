@@ -45,7 +45,6 @@
     <reflection.version>0.9.11</reflection.version>
     <guava.version>23.0</guava.version>
     <janus.version>0.2.0</janus.version>
-
   </properties>
 
 
@@ -79,12 +78,6 @@
   </build>
 
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
