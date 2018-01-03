@@ -48,7 +48,7 @@ public class GremlinLinkPropertyMapper implements GremlinPropertyMapper<GremlinR
             }
 
             if (linkedVertex == null) {
-                LOGGER.debug("No Linked Vertex for property: " + property.getName() + ". Creating " + property.getRelatedSchema().getClassName());
+                LOGGER.debug("No Linked Vertex for property: {} . Creating {}",property.getName(),property.getRelatedSchema().getClassName());
                 // No linked vertex yet, create it
                 linkedVertex = graphAdapter.createVertex(property.getRelatedSchema());
             }
@@ -62,7 +62,7 @@ public class GremlinLinkPropertyMapper implements GremlinPropertyMapper<GremlinR
         }
 
         if (Boolean.getBoolean(CASCADE_ALL_KEY) || property.getDirection() == Direction.OUT) {
-            LOGGER.debug("Cascading copy of " + property.getRelatedSchema().getClassName());
+            LOGGER.debug("Cascading copy of {}",property.getRelatedSchema().getClassName());
             // Updates or saves the val into the linkedVertex
             if (property.getDirection() == Direction.OUT) {
                 property.getRelatedSchema().cascadeCopyToGraph(graphAdapter, linkedVertex, val, cascadingSchemas);

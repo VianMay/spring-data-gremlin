@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.*;
 
+
 /**
  * Default {@link SchemaGenerator} using Java reflection along with Index and Index annotations.
  * <p>
@@ -30,37 +31,50 @@ import java.util.*;
  *
  * @author Gman
  */
-public class BasicSchemaGenerator implements SchemaGenerator {
+public class BasicSchemaGenerator implements SchemaGenerator
+{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BasicSchemaGenerator.class);
+
     private ObjectMapper objectMapper;
+
     private Set<Class<?>> vertexClasses;
+
     private Set<Class<?>> embeddedClasses;
+
     private Set<Class<?>> edgeClasses;
+
     private GremlinPropertyFactory propertyFactory;
+
     private GremlinPropertyEncoder idEncoder;
 
-    public BasicSchemaGenerator() {
+    public BasicSchemaGenerator()
+    {
         this(null, new GremlinPropertyFactory(), null);
     }
 
-    public BasicSchemaGenerator(ObjectMapper objectMapper) {
+    public BasicSchemaGenerator(ObjectMapper objectMapper)
+    {
         this(null, new GremlinPropertyFactory(), objectMapper);
     }
 
-    public BasicSchemaGenerator(GremlinPropertyEncoder idEncoder) {
+    public BasicSchemaGenerator(GremlinPropertyEncoder idEncoder)
+    {
         this(idEncoder, new GremlinPropertyFactory(), null);
     }
 
-    public BasicSchemaGenerator(GremlinPropertyEncoder idEncoder, ObjectMapper objectMapper) {
+    public BasicSchemaGenerator(GremlinPropertyEncoder idEncoder, ObjectMapper objectMapper)
+    {
         this(idEncoder, new GremlinPropertyFactory(), objectMapper);
     }
 
-    public BasicSchemaGenerator(GremlinPropertyEncoder idEncoder, GremlinPropertyFactory propertyFactory) {
+    public BasicSchemaGenerator(GremlinPropertyEncoder idEncoder, GremlinPropertyFactory propertyFactory)
+    {
         this(idEncoder, propertyFactory, null);
     }
 
-    public BasicSchemaGenerator(GremlinPropertyEncoder idEncoder, GremlinPropertyFactory propertyFactory, ObjectMapper objectMapper) {
+    public BasicSchemaGenerator(GremlinPropertyEncoder idEncoder, GremlinPropertyFactory propertyFactory, ObjectMapper objectMapper)
+    {
         this.idEncoder = idEncoder;
         this.propertyFactory = propertyFactory;
         this.objectMapper = objectMapper;
@@ -71,7 +85,8 @@ public class BasicSchemaGenerator implements SchemaGenerator {
      * @return A GremlinSchema for the given Class
      */
 
-    public <V> GremlinSchema<V> generateSchema(Class<V> clazz) throws SchemaGeneratorException {
+    public <V> GremlinSchema<V> generateSchema(Class<V> clazz) throws SchemaGeneratorException
+    {
         String className = getVertexName(clazz);
 
         Field field = getIdField(clazz);
@@ -85,16 +100,19 @@ public class BasicSchemaGenerator implements SchemaGenerator {
 
         // Generate the Schema for clazz with all of it's super classes.
         populate(clazz, schema);
-        if (schema.isVertexSchema() && schema.getIdAccessor() == null) {
+        if (schema.isVertexSchema() && schema.getIdAccessor() == null)
+        {
             throw new SchemaGeneratorException("Could not generate Schema for " + clazz.getSimpleName() + ". No @Id field found.");
         }
         return schema;
     }
 
-    public <V> GremlinSchema<V> generateDynamicSchema(String className, Class<? extends Map> mapType) {
+    public <V> GremlinSchema<V> generateDynamicSchema(String className, Class<? extends Map> mapType)
+    {
 
         GremlinIdMapPropertyAccessor idAccessor = new GremlinIdMapPropertyAccessor();
-        if (mapType.isInterface()) {
+        if (mapType.isInterface())
+        {
             mapType = HashMap.class;
         }
         GremlinDynamicSchema<V> schema = new GremlinDynamicSchema(mapType);
@@ -102,24 +120,31 @@ public class BasicSchemaGenerator implements SchemaGenerator {
         schema.setIdAccessor(idAccessor);
         schema.setIdEncoder(idEncoder);
 
-
         return schema;
     }
 
-    protected <S> boolean isSchemaWritable(Class<S> clazz) {
+    protected <S> boolean isSchemaWritable(Class<S> clazz)
+    {
         return isVertexClass(clazz) || isEdgeClass(clazz);
     }
 
-    protected <V, S> void populate(Class<V> clazz, GremlinSchema<S> schema) {
+    protected <V, S> void populate(Class<V> clazz, GremlinSchema<S> schema)
+    {
         populate(clazz, schema, null);
     }
 
-    private <V> GremlinSchema<V> createSchema(Class<V> clazz) {
-        if (isVertexClass(clazz)) {
+    private <V> GremlinSchema<V> createSchema(Class<V> clazz)
+    {
+        if (isVertexClass(clazz))
+        {
             return new GremlinVertexSchema<>(clazz);
-        } else if (isEdgeClass(clazz)) {
+        }
+        else if (isEdgeClass(clazz))
+        {
             return new GremlinEdgeSchema<>(clazz);
-        } else {
+        }
+        else
+        {
             throw new IllegalArgumentException(clazz + " cannot be classes as a VERTEX or EDGE!");
         }
     }
@@ -129,26 +154,34 @@ public class BasicSchemaGenerator implements SchemaGenerator {
      * @param schema
      * @param embeddedFieldAccessor If this method was called for an embedded Field it is provided here
      */
-    protected <V, S> void populate(final Class<V> clazz, final GremlinSchema<S> schema, final GremlinFieldPropertyAccessor embeddedFieldAccessor) {
+    protected <V, S> void populate(final Class<V> clazz, final GremlinSchema<S> schema, final GremlinFieldPropertyAccessor embeddedFieldAccessor)
+    {
 
-        ReflectionUtils.doWithFields(clazz, new ReflectionUtils.FieldCallback() {
+        ReflectionUtils.doWithFields(clazz, new ReflectionUtils.FieldCallback()
+        {
             @Override
-            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException {BasicSchemaGenerator.this.processField(field, schema, objectMapper, embeddedFieldAccessor);}
-        }, new ReflectionUtils.FieldFilter() {
+            public void doWith(Field field) throws IllegalArgumentException, IllegalAccessException
+            {
+                BasicSchemaGenerator.this.processField(field, schema, objectMapper, embeddedFieldAccessor);
+            }
+        }, new ReflectionUtils.FieldFilter()
+        {
             @Override
-            public boolean matches(Field field) {
+            public boolean matches(Field field)
+            {
                 boolean result = shouldProcessField(schema, field);
                 return result;
             }
         });
     }
 
-    protected <S> void processField(Field field, GremlinSchema<S> schema, ObjectMapper objectMapper, GremlinFieldPropertyAccessor embeddedFieldAccessor) {
-
+    protected <S> void processField(Field field, GremlinSchema<S> schema, ObjectMapper objectMapper, GremlinFieldPropertyAccessor embeddedFieldAccessor)
+    {
 
         Class<?> cls = field.getType();
         Type type = field.getGenericType();
-        if (type instanceof TypeVariable) {
+        if (type instanceof TypeVariable)
+        {
             cls = getGenericType(field, schema);
         }
 
@@ -157,7 +190,8 @@ public class BasicSchemaGenerator implements SchemaGenerator {
 
         // Get the rootEmbeddedField
         Field rootEmbeddedField = null;
-        if (embeddedFieldAccessor != null) {
+        if (embeddedFieldAccessor != null)
+        {
             rootEmbeddedField = embeddedFieldAccessor.getRootField();
         }
         String name = getPropertyName(field, rootEmbeddedField, schema.getClassType());
@@ -166,87 +200,135 @@ public class BasicSchemaGenerator implements SchemaGenerator {
         //        if (acceptType(cls)) {
 
         // If it is an enum, check if it is annotated with @Enumerated
-        if (isEnumField(cls, field, schema)) {
+        if (isEnumField(cls, field, schema))
+        {
             Class<?> enumType = cls;
 
             cls = getEnumType(field);
-            if (Collection.class.isAssignableFrom(field.getType())) {
+            if (Collection.class.isAssignableFrom(field.getType()))
+            {
                 Class<Collection<Enum>> enumCollectionCls = getEnumCollectionType(field);
-                if (enumCollectionCls.isInterface()) {
+                if (enumCollectionCls.isInterface())
+                {
                     throw new IllegalArgumentException("Collection is an interface (" + enumCollectionCls +
-                                                       "). The concrete type cannot be determined. Please use a concrete Collection type or use @Enumerated(collectionType=HashSet.class)");
+                        "). The concrete type cannot be determined. Please use a concrete Collection type or use @Enumerated(collectionType=HashSet.class)");
                 }
                 boolean useOrdinal = cls == Integer.class;
                 accessor = new GremlinEnumStringCollectionFieldPropertyAccessor(field, enumCollectionCls, useOrdinal);
                 cls = String.class;
-            } else {
-                if (cls == String.class) {
+            }
+            else
+            {
+                if (cls == String.class)
+                {
                     accessor = new GremlinEnumStringFieldPropertyAccessor(field, enumType);
-                } else if (cls == Integer.class) {
+                }
+                else if (cls == Integer.class)
+                {
                     accessor = new GremlinEnumOrdinalFieldPropertyAccessor(field, enumType);
-                } else {
+                }
+                else
+                {
                     accessor = new GremlinEnumOrdinalFieldPropertyAccessor(field, enumType);
                 }
             }
-        } else if (isCollectionViaField(cls, field, schema)) {
+        }
+        else if (isCollectionViaField(cls, field, schema))
+        {
             cls = getCollectionType(field, schema);
-            if (isLinkOutward(cls, field)) {
+            if (isLinkOutward(cls, field))
+            {
                 property = propertyFactory.getCollectionViaProperty(cls, name, Direction.OUT);
-            } else {
+            }
+            else
+            {
                 property = propertyFactory.getCollectionViaProperty(cls, name, Direction.IN);
             }
-        } else if (isCollectionField(cls, field, schema)) {
+        }
+        else if (isCollectionField(cls, field, schema))
+        {
             cls = getCollectionType(field, schema);
-            if (isLinkOutward(cls, field)) {
+            if (isLinkOutward(cls, field))
+            {
                 property = propertyFactory.getCollectionProperty(cls, name, Direction.OUT);
-            } else {
+            }
+            else
+            {
                 property = propertyFactory.getCollectionProperty(cls, name, Direction.IN);
             }
-        } else if (isLinkViaField(cls, field)) {
-            if (isLinkOutward(cls, field)) {
+        }
+        else if (isLinkViaField(cls, field))
+        {
+            if (isLinkOutward(cls, field))
+            {
                 property = propertyFactory.getLinkViaProperty(cls, name, Direction.OUT);
-            } else {
+            }
+            else
+            {
                 property = propertyFactory.getLinkViaProperty(cls, name, Direction.IN);
             }
-        } else if (isAdjacentField(cls, field)) {
-            if (isAdjacentOutward(cls, field)) {
+        }
+        else if (isAdjacentField(cls, field))
+        {
+            if (isAdjacentOutward(cls, field))
+            {
                 property = propertyFactory.getAdjacentProperty(cls, "out", Direction.OUT);
-            } else {
+            }
+            else
+            {
                 property = propertyFactory.getAdjacentProperty(cls, "in", Direction.IN);
             }
-        } else if (isLinkField(cls, field)) {
+        }
+        else if (isLinkField(cls, field))
+        {
 
-            if (isLinkOutward(cls, field)) {
+            if (isLinkOutward(cls, field))
+            {
                 property = propertyFactory.getLinkProperty(cls, name, Direction.OUT);
-            } else {
+            }
+            else
+            {
                 property = propertyFactory.getLinkProperty(cls, name, Direction.IN);
             }
-        } else if (isEmbeddedField(cls, field)) {
+        }
+        else if (isEmbeddedField(cls, field))
+        {
             populate(cls, schema, (GremlinFieldPropertyAccessor) accessor);
 
             // Return now as we don't want a property for the embedded field.
             return;
-        } else if (isDynamicVertex(cls, field)) {
+        }
+        else if (isDynamicVertex(cls, field))
+        {
             String dynamicClassName = getDynamicClassName(field, rootEmbeddedField, schema.getClassType());
-            if (isLinkOutward(cls, field)) {
+            if (isLinkOutward(cls, field))
+            {
                 property = propertyFactory.getDynamicProperty((Class<? extends Map>) cls, name, dynamicClassName, Direction.OUT);
-            } else {
+            }
+            else
+            {
                 property = propertyFactory.getDynamicProperty((Class<? extends Map>) cls, name, dynamicClassName, Direction.IN);
             }
-        } else if (isSerialisableField(cls, field, schema)) {
+        }
+        else if (isSerialisableField(cls, field, schema))
+        {
             accessor = new GremlinSerializableFieldPropertyAccessor(field, embeddedFieldAccessor);
             cls = getSerializableType(field);
-        } else if (isJsonField(cls, field)) {
+        }
+        else if (isJsonField(cls, field))
+        {
             Class<?> mixin = getJsonMixin(field);
             accessor = new GremlinJSONFieldPropertyAccessor(field, mixin, embeddedFieldAccessor, objectMapper);
             cls = getJsonType(field);
         }
 
         // Create the property if it hasn't been created already
-        if (property == null) {
+        if (property == null)
+        {
             Index.IndexType index = getIndexType(field);
             String indexName = null;
-            if (index == Index.IndexType.NON_UNIQUE) {
+            if (index == Index.IndexType.NON_UNIQUE)
+            {
                 indexName = getIndexName(field);
             }
             property = propertyFactory.getIndexedProperty(cls, name, index, indexName);
@@ -256,167 +338,214 @@ public class BasicSchemaGenerator implements SchemaGenerator {
         //        }
     }
 
-    protected Index.IndexType getIndexType(Field field) {
+    protected Index.IndexType getIndexType(Field field)
+    {
         Index index = AnnotationUtils.getAnnotation(field, Index.class);
-        if (index != null) {
+        if (index != null)
+        {
             return index.type();
-        } else {
+        }
+        else
+        {
             return Index.IndexType.NONE;
         }
     }
 
-    protected String getIndexName(Field field) {
+    protected String getIndexName(Field field)
+    {
         return null;
     }
 
-    protected boolean shouldProcessField(GremlinSchema schema, Field field) {
+    protected boolean shouldProcessField(GremlinSchema schema, Field field)
+    {
         return field != null
-               //               && acceptType(field.getType())
-               && schema.getIdAccessor() instanceof GremlinFieldPropertyAccessor && !((GremlinFieldPropertyAccessor) schema.getIdAccessor()).getField().equals(field) && !Modifier.isTransient(
-                field.getModifiers()) && !Modifier.isStatic(field.getModifiers());
+            && schema.getIdAccessor() instanceof GremlinFieldPropertyAccessor && !((GremlinFieldPropertyAccessor) schema.getIdAccessor()).getField().equals(field) && !Modifier.isTransient(
+            field.getModifiers()) && !Modifier.isStatic(field.getModifiers());
     }
 
-    protected Field getIdField(Class<?> cls) throws SchemaGeneratorException {
-        try {
+    protected Field getIdField(Class<?> cls) throws SchemaGeneratorException
+    {
+        try
+        {
             Field field = ReflectionUtils.findField(cls, "id");
-            if (field != null && (field.getType() == Long.class || field.getType() == String.class)) {
+            if (field != null && (field.getType() == Long.class || field.getType() == String.class))
+            {
                 return field;
-            } else {
+            }
+            else
+            {
                 throw new NoSuchFieldException("");
             }
-        } catch (NoSuchFieldException e) {
+        }
+        catch (NoSuchFieldException e)
+        {
             throw new SchemaGeneratorException("Cannot generate schema as there is no ID field. You must have a field of type Long or String named 'id'.");
         }
     }
 
-    protected Class<Collection<Enum>> getEnumCollectionType(Field field) {
+    protected Class<Collection<Enum>> getEnumCollectionType(Field field)
+    {
         return (Class<Collection<Enum>>) field.getType();
     }
 
-    protected Class<?> getEnumType(Field field) {
+    protected Class<?> getEnumType(Field field)
+    {
         return String.class;
     }
 
-    private Class<?> getSerializableType(Field field) {
+    private Class<?> getSerializableType(Field field)
+    {
         return byte[].class;
     }
 
-    private Class<?> getJsonType(Field field) {
+    private Class<?> getJsonType(Field field)
+    {
         return String.class;
     }
 
-    protected boolean isPropertyIndexed(Field field) {
+    protected boolean isPropertyIndexed(Field field)
+    {
         return AnnotationUtils.getAnnotation(field, Index.class) != null;
     }
 
-    protected boolean isSpatialLatitudeIndex(Field field) {
+    protected boolean isSpatialLatitudeIndex(Field field)
+    {
         Index index = AnnotationUtils.getAnnotation(field, Index.class);
-        if (index != null) {
+        if (index != null)
+        {
             return index.type() == Index.IndexType.SPATIAL_LATITUDE;
         }
         return false;
     }
 
-    protected boolean isSpatialLongitudeIndex(Field field) {
+    protected boolean isSpatialLongitudeIndex(Field field)
+    {
         Index index = AnnotationUtils.getAnnotation(field, Index.class);
-        if (index != null) {
+        if (index != null)
+        {
             return index.type() == Index.IndexType.SPATIAL_LONGITUDE;
         }
         return false;
     }
 
-    protected boolean isPropertyUnique(Field field) {
+    protected boolean isPropertyUnique(Field field)
+    {
         Index index = AnnotationUtils.getAnnotation(field, Index.class);
-        if (index != null) {
+        if (index != null)
+        {
             return index.type() == Index.IndexType.UNIQUE;
         }
         return false;
     }
 
-    protected String getPropertyName(Field field, Field rootEmbeddedField, Class<?> schemaClass) {
+    protected String getPropertyName(Field field, Field rootEmbeddedField, Class<?> schemaClass)
+    {
         String propertyName = field.getName();
 
-        if (rootEmbeddedField != null) {
+        if (rootEmbeddedField != null)
+        {
             propertyName = String.format("%s_%s", getPropertyName(rootEmbeddedField, null, schemaClass), propertyName);
         }
-        if (field.getDeclaringClass() != schemaClass) {
+        if (field.getDeclaringClass() != schemaClass)
+        {
             propertyName = String.format("%s_%s", schemaClass.getSimpleName().toLowerCase(), propertyName);
         }
         return propertyName;
     }
 
-    protected String getDynamicClassName(Field field, Field rootEmbeddedField, Class<?> schemaClass) {
+    protected String getDynamicClassName(Field field, Field rootEmbeddedField, Class<?> schemaClass)
+    {
         String linkName = getPropertyName(field, rootEmbeddedField, schemaClass);
         return "DYN_" + linkName.toUpperCase();
     }
 
-    protected boolean isSerialisableField(Class<?> cls, Field field, GremlinSchema schema) {
+    protected boolean isSerialisableField(Class<?> cls, Field field, GremlinSchema schema)
+    {
         return !stdType(cls) && (Serializable.class.isAssignableFrom(cls) || (Collection.class.isAssignableFrom(cls) && Serializable.class.isAssignableFrom(getCollectionType(field, schema))));
     }
 
-    protected boolean isJsonField(Class<?> cls, Field field) {
+    protected boolean isJsonField(Class<?> cls, Field field)
+    {
         return !stdType(cls);
     }
 
-    protected Class<?> getJsonMixin(Field field) {
+    protected Class<?> getJsonMixin(Field field)
+    {
         return null;
     }
 
-    protected boolean isEnumField(Class<?> cls, Field field, GremlinSchema schema) {
+    protected boolean isEnumField(Class<?> cls, Field field, GremlinSchema schema)
+    {
         return cls.isEnum() || (Collection.class.isAssignableFrom(cls) && getCollectionType(field, schema).isEnum());
     }
 
-    protected boolean isEmbeddedField(Class<?> cls, Field field) {
+    protected boolean isEmbeddedField(Class<?> cls, Field field)
+    {
         return isEmbeddedClass(cls);
     }
 
-    protected boolean isDynamicVertex(Class<?> cls, Field field) {
+    protected boolean isDynamicVertex(Class<?> cls, Field field)
+    {
         return Map.class.isAssignableFrom(cls) && GenericsUtil.getGenericTypes(field, 2)[0] == String.class;
     }
 
-    protected boolean isLinkField(Class<?> cls, Field field) {
+    protected boolean isLinkField(Class<?> cls, Field field)
+    {
         return isVertexClass(cls);
     }
 
-    protected boolean isLinkViaField(Class<?> cls, Field field) {
+    protected boolean isLinkViaField(Class<?> cls, Field field)
+    {
         return isEdgeClass(cls);
     }
 
-    protected boolean isAdjacentField(Class<?> cls, Field field) {
+    protected boolean isAdjacentField(Class<?> cls, Field field)
+    {
         return false;
     }
 
-    protected boolean isAdjacentOutward(Class<?> cls, Field field) {
+    protected boolean isAdjacentOutward(Class<?> cls, Field field)
+    {
         return false;
     }
 
-    protected boolean isLinkOutward(Class<?> cls, Field field) {
+    protected boolean isLinkOutward(Class<?> cls, Field field)
+    {
         return true;
     }
 
-    protected boolean isCollectionField(Class<?> cls, Field field, GremlinSchema schema) {
+    protected boolean isCollectionField(Class<?> cls, Field field, GremlinSchema schema)
+    {
         return Collection.class.isAssignableFrom(cls) && isVertexClass(getCollectionType(field, schema));
     }
 
-    protected boolean isCollectionViaField(Class<?> cls, Field field, GremlinSchema schema) {
+    protected boolean isCollectionViaField(Class<?> cls, Field field, GremlinSchema schema)
+    {
         return Collection.class.isAssignableFrom(cls) && isEdgeClass(getCollectionType(field, schema));
     }
 
-    private Class<?> getCollectionType(Field field, GremlinSchema schema) {
+    private Class<?> getCollectionType(Field field, GremlinSchema schema)
+    {
         return getGenericType(field, schema);
     }
 
-    public Class<?> getGenericType(Field field, GremlinSchema schema) {
+    public Class<?> getGenericType(Field field, GremlinSchema schema)
+    {
         Class<?> cls = GenericsUtil.getGenericTypes(field, 1)[0];
-        if (cls == TypeVariable.class || !isVertexClass(cls) && !isEdgeClass(cls)) {
+        if (cls == TypeVariable.class || !isVertexClass(cls) && !isEdgeClass(cls))
+        {
             Type var = field.getGenericType();
-            if (var instanceof ParameterizedType) {
+            if (var instanceof ParameterizedType)
+            {
                 var = ((ParameterizedType) var).getActualTypeArguments()[0];
             }
             int index = 0;
-            for (Type stype : field.getDeclaringClass().getTypeParameters()) {
-                if (stype instanceof TypeVariable) {
-                    if (stype.getTypeName().equals(var.getTypeName())) {
+            for (Type stype : field.getDeclaringClass().getTypeParameters())
+            {
+                if (stype instanceof TypeVariable)
+                {
+                    if (stype.getTypeName().equals(var.getTypeName()))
+                    {
                         cls = GenericsUtil.getGenericTypes(schema.getClassType(), -1)[index];
                         break;
                     }
@@ -434,7 +563,8 @@ public class BasicSchemaGenerator implements SchemaGenerator {
      * @param clazz The Class to find the name of
      * @return The vertex name of the class
      */
-    protected String getVertexName(Class<?> clazz) {
+    protected String getVertexName(Class<?> clazz)
+    {
         return clazz.getSimpleName();
     }
 
@@ -442,8 +572,10 @@ public class BasicSchemaGenerator implements SchemaGenerator {
      * @param cls
      * @return
      */
-    protected boolean isVertexClass(Class<?> cls) {
-        if (vertexClasses == null) {
+    protected boolean isVertexClass(Class<?> cls)
+    {
+        if (vertexClasses == null)
+        {
             LOGGER.warn("Entities is null, this is unusual and is possibly an error. Please add the entity classes to the concrete SchemaBuilder.");
             return false;
         }
@@ -455,8 +587,10 @@ public class BasicSchemaGenerator implements SchemaGenerator {
      * @param cls
      * @return
      */
-    protected boolean isEmbeddedClass(Class<?> cls) {
-        if (embeddedClasses == null) {
+    protected boolean isEmbeddedClass(Class<?> cls)
+    {
+        if (embeddedClasses == null)
+        {
             return false;
         }
 
@@ -467,58 +601,68 @@ public class BasicSchemaGenerator implements SchemaGenerator {
      * @param cls
      * @return
      */
-    protected boolean isEdgeClass(Class<?> cls) {
-        if (edgeClasses == null) {
+    protected boolean isEdgeClass(Class<?> cls)
+    {
+        if (edgeClasses == null)
+        {
             return false;
         }
 
         return edgeClasses.contains(cls);
     }
 
-    protected boolean acceptType(Class<?> cls) {
+    protected boolean acceptType(Class<?> cls)
+    {
         return Enum.class.isAssignableFrom(cls) ||
-               ClassUtils.isPrimitiveOrWrapper(cls) ||
-               cls == String.class ||
-               Collection.class.isAssignableFrom(cls) ||
-               cls == Date.class ||
-               isVertexClass(cls) ||
-               isEmbeddedClass(cls) ||
-               isEdgeClass(cls);
+            ClassUtils.isPrimitiveOrWrapper(cls) ||
+            cls == String.class ||
+            Collection.class.isAssignableFrom(cls) ||
+            cls == Date.class ||
+            isVertexClass(cls) ||
+            isEmbeddedClass(cls) ||
+            isEdgeClass(cls);
     }
 
-    protected boolean stdType(Class<?> cls) {
+    protected boolean stdType(Class<?> cls)
+    {
         return ClassUtils.isPrimitiveOrWrapper(cls) ||
-               cls == String.class ||
-               cls == Date.class;
+            cls == String.class ||
+            cls == Date.class;
     }
 
     @Override
-    public void setVertexClasses(Set<Class<?>> entityClasses) {
+    public void setVertexClasses(Set<Class<?>> entityClasses)
+    {
         this.vertexClasses = entityClasses;
     }
 
     @Override
-    public void setVertexClasses(Class<?>... entites) {
+    public void setVertexClasses(Class<?>... entites)
+    {
         setVertexClasses(new HashSet<Class<?>>(Arrays.asList(entites)));
     }
 
     @Override
-    public void setEmbeddedClasses(Set<Class<?>> embeddedClasses) {
+    public void setEmbeddedClasses(Set<Class<?>> embeddedClasses)
+    {
         this.embeddedClasses = embeddedClasses;
     }
 
     @Override
-    public void setEmbeddedClasses(Class<?>... embedded) {
+    public void setEmbeddedClasses(Class<?>... embedded)
+    {
         setEmbeddedClasses(new HashSet<Class<?>>(Arrays.asList(embedded)));
     }
 
     @Override
-    public void setEdgeClasses(Set<Class<?>> relationshipClasses) {
+    public void setEdgeClasses(Set<Class<?>> relationshipClasses)
+    {
         this.edgeClasses = relationshipClasses;
     }
 
     @Override
-    public void setEdgeClasses(Class<?>... relationshipClasses) {
+    public void setEdgeClasses(Class<?>... relationshipClasses)
+    {
         setEdgeClasses(new HashSet<Class<?>>(Arrays.asList(relationshipClasses)));
     }
 

@@ -20,7 +20,7 @@ public class GremlinStandardPropertyMapper implements GremlinPropertyMapper<Grem
 
     @Override
     public void copyToVertex(GremlinProperty property, GremlinGraphAdapter graphAdapter, Element element, Object val, Map<Object, Object> cascadingSchemas) {
-        LOGGER.debug("Mapping property: " + property.getName() + " to element: " + element);
+        LOGGER.debug("Mapping property: {} to element: {}",property.getName(),element);
         element.property(property.getName(), val);
     }
 

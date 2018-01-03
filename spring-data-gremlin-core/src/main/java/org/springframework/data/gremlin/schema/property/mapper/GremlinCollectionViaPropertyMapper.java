@@ -100,7 +100,7 @@ public class GremlinCollectionViaPropertyMapper extends GremlinLinkPropertyMappe
 
         // For each disjointed edge, remove it
         for (Edge vertexToDelete : CollectionUtils.disjunction(existingLinkedEdges, actualLinkedEdges)) {
-            LOGGER.debug("Removing " + vertexToDelete + ".");
+            LOGGER.debug("Removing {} .",vertexToDelete);
             vertexToDelete.remove();
         }
 

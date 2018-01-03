@@ -12,43 +12,55 @@ import org.springframework.data.gremlin.tx.GremlinGraphFactory;
 
 import static org.springframework.data.gremlin.schema.property.GremlinRelatedProperty.CARDINALITY;
 
+
 /**
  * An abstract {@link SchemaWriter} for implementing databases to extend for easy integration.
  *
  * @author Gman
  */
-public abstract class AbstractSchemaWriter implements SchemaWriter {
+public abstract class AbstractSchemaWriter implements SchemaWriter
+{
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSchemaWriter.class);
 
     @Override
-    public void writeSchema(GremlinGraphFactory tgf, GremlinSchema<?> schema) throws SchemaWriterException {
+    public void writeSchema(GremlinGraphFactory tgf, GremlinSchema<?> schema) throws SchemaWriterException
+    {
 
-        try {
-            if (LOGGER.isDebugEnabled()) {
+        try
+        {
+            if (LOGGER.isDebugEnabled())
+            {
                 LOGGER.debug("CREATING CLASS: " + schema.getClassName());
             }
             Object element;
-            if (schema.isVertexSchema()) {
+            if (schema.isVertexSchema())
+            {
                 element = createVertexClass(schema);
-            } else if (schema.isEdgeSchema()) {
+            }
+            else if (schema.isEdgeSchema())
+            {
 
                 Object outVertex = createVertexClass(schema.getOutProperty().getRelatedSchema());
                 Object inVertex = createVertexClass(schema.getInProperty().getRelatedSchema());
 
                 element = createEdgeClass(schema.getClassName(), outVertex, inVertex, schema.getOutProperty().getCardinality());
-            } else {
-                throw new IllegalStateException("Unknown class type. Expected Vertex or Edge. "+schema);
+            }
+            else
+            {
+                throw new IllegalStateException("Unknown class type. Expected Vertex or Edge. " + schema);
             }
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("CREATED CLASS: " + schema.getClassName());
+            if (LOGGER.isDebugEnabled())
+            {
+                LOGGER.debug("CREATED CLASS: {}", schema.getClassName());
             }
-
 
             writeProperties(element, schema);
 
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
 
             rollback(schema);
 
@@ -58,96 +70,110 @@ public abstract class AbstractSchemaWriter implements SchemaWriter {
         }
     }
 
-    private void writeProperties(Object elementClass, GremlinSchema<?> schema) {
+    private void writeProperties(Object elementClass, GremlinSchema<?> schema)
+    {
         GremlinProperty latitude = null;
         GremlinProperty longitude = null;
-        for (GremlinProperty property : schema.getProperties()) {
+        for (GremlinProperty property : schema.getProperties())
+        {
 
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("CREATING Property: " + property.getName());
-            }
+            LOGGER.debug("CREATING Property: {}", property.getName());
             Class<?> cls = property.getType();
 
-            try {
+            try
+            {
 
                 // If prop is null, it does not exist, so let's create it
-                if (!isPropertyAvailable(elementClass, property.getName())) {
+                if (!isPropertyAvailable(elementClass, property.getName()))
+                {
 
-                    if (property instanceof GremlinAdjacentProperty) {
+                    if (property instanceof GremlinAdjacentProperty)
+                    {
                         continue;
                     }
 
-                    if (property instanceof GremlinRelatedProperty) {
+                    if (property instanceof GremlinRelatedProperty)
+                    {
 
                         GremlinRelatedProperty relatedProperty = (GremlinRelatedProperty) property;
-                        if (relatedProperty.getRelatedSchema().isVertexSchema()) {
+                        if (relatedProperty.getRelatedSchema().isVertexSchema())
+                        {
 
-                            if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("CREATING RELATED PROPERTY: " + schema.getClassName() + "." + property.getName());
+                            if (LOGGER.isDebugEnabled())
+                            {
+                                LOGGER.debug("CREATING RELATED PROPERTY: {}.{}", schema.getClassName(), property.getName());
                             }
                             Object relatedVertex = createVertexClass(relatedProperty.getRelatedSchema());
 
-                            if (((GremlinRelatedProperty) property).getDirection() == Direction.OUT) {
+                            if (((GremlinRelatedProperty) property).getDirection() == Direction.OUT)
+                            {
                                 createEdgeClass(property.getName(), elementClass, relatedVertex, relatedProperty.getCardinality());
-                            } else {
+                            }
+                            else
+                            {
                                 createEdgeClass(property.getName(), relatedVertex, elementClass, relatedProperty.getCardinality());
                             }
-                        } else {
-                            if (LOGGER.isDebugEnabled()) {
-                                LOGGER.debug("CREATING RELATED EDGE: " + schema.getClassName() + "." + property.getName());
+                        }
+                        else
+                        {
+                            if (LOGGER.isDebugEnabled())
+                            {
+                                LOGGER.debug("CREATING RELATED EDGE: {}.{}", schema.getClassName(), property.getName());
                             }
                             Object relatedVertex = createVertexClass(relatedProperty.getAdjacentProperty().getRelatedSchema());
 
-                            if (((GremlinRelatedProperty) property).getDirection() == Direction.OUT) {
+                            if (((GremlinRelatedProperty) property).getDirection() == Direction.OUT)
+                            {
                                 createEdgeClass(relatedProperty.getRelatedSchema().getClassName(), elementClass, relatedVertex, relatedProperty.getCardinality());
-                            } else {
+                            }
+                            else
+                            {
                                 createEdgeClass(relatedProperty.getRelatedSchema().getClassName(), relatedVertex, elementClass, relatedProperty.getCardinality());
                             }
                         }
 
-                    } else {
+                    }
+                    else
+                    {
 
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("CREATING PROPERTY: " + schema.getClassName() + "." + property.getName());
+                        if (LOGGER.isDebugEnabled())
+                        {
+                            LOGGER.debug("CREATING PROPERTY: {}.{}", schema.getClassName(), property.getName());
                         }
                         // Standard property, primitive, String, Enum, byte[]
                         Object prop = createProperty(elementClass, property.getName(), cls);
 
-                        switch (property.getIndex()) {
-                        case UNIQUE:
-                            createUniqueIndex(prop);
-                            break;
-                        case NON_UNIQUE:
-                            createNonUniqueIndex(prop);
-                            break;
-                        case SPATIAL_LATITUDE:
-                            latitude = property;
-                            break;
+                        switch (property.getIndex())
+                        {
+                            case UNIQUE:
+                                createUniqueIndex(prop);
+                                break;
+                            case NON_UNIQUE:
+                                createNonUniqueIndex(prop);
+                                break;
+                            case SPATIAL_LATITUDE:
+                                latitude = property;
+                                break;
 
-                        case SPATIAL_LONGITUDE:
-                            longitude = property;
-                            break;
+                            case SPATIAL_LONGITUDE:
+                                longitude = property;
+                                break;
                         }
                     }
                 }
-
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("CREATED CLASS: " + schema.getClassName());
-                }
-            } catch (Exception e1) {
+                LOGGER.debug("CREATED CLASS: {}", schema.getClassName());
+            }
+            catch (Exception e1)
+            {
                 LOGGER.warn(String.format("Could not create property %s of type %s", property, cls), e1);
             }
         }
 
-        if (latitude != null && longitude != null) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("CREATING SPATIAL INDEX...");
-            }
+        if (latitude != null && longitude != null)
+        {
+            LOGGER.debug("CREATING SPATIAL INDEX...");
             createSpatialIndex(schema, latitude, longitude);
-
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("CREATED SPATIAL INDEX.");
-            }
+            LOGGER.debug("CREATED SPATIAL INDEX.");
         }
     }
 

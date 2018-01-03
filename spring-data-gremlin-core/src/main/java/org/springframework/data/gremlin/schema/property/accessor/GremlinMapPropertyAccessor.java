@@ -36,7 +36,7 @@ public class GremlinMapPropertyAccessor<V> implements GremlinPropertyAccessor<V>
     @Override
     public void set(Object object, V val) {
 
-        Assert.isTrue(object instanceof Map);
+        Assert.isTrue(object instanceof Map,"Type need to be a Map");
         Map<String, Object> map = (Map<String, Object>) object;
 
         if (map != null) {
