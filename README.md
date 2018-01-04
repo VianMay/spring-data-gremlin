@@ -2,17 +2,20 @@
 
 Spring data gremlin makes it easier to implement Graph based repositories. This module extends [Spring Data](http://projects.spring.io/spring-data) to allow support for potentially any [Graph database](https://en.wikipedia.org/wiki/Graph_database) that implements the [Tinkerpop Blueprints 2.x API](https://github.com/tinkerpop/blueprints/wiki). 
 
+This project in under construction and was forked and ispirated directly [from](https://github.com/gjrwebber/spring-data-gremlin) we tring to migrated code to Tinkerpop 3.0 and for the moment we are focus only on JanusGraph. 
+
+
+
 ## Features
 
 - All the great features of [Spring Data](http://projects.spring.io/spring-data)
-- Support for [OrientDB](http://orientdb.com) and [TitanDB](http://s3.thinkaurelius.com/docs/titan/current)  out of the box
+- Support [JanusDB](http://janusgraph.org/)  out of the box
 - Schema creation in supported databases
-- Support to build repositories based on Spring using our [custom set of annotations](https://github.com/gjrwebber/org/springframework/data/gremlin/annotation), [spring-data-neo4j](http://docs.spring.io/spring-data/neo4j/docs/current/reference/html/#reference_programming-model_annotations) or JPA annotations.
+- Support to build repositories based on Spring using our [custom set of annotations](https://github.com/gjrwebber/org/springframework/data/gremlin/annotation)
 - Vertex and Edge repository support
 - Pagination support
 - Unique, non-unique and spatial indices supported
 - Support for [Gremlin query language](http://gremlin.tinkerpop.com/) through the ```@Query``` annotation
-- Support for native queries (Eg. [OrientDB SQL](http://orientdb.com/docs/2.0/orientdb.wiki/SQL-Query.html)) through the ```@Query``` annotation
 - JavaConfig based repository configuration by introducing @EnableGremlinRepositories
 - ```Map``` and ```CompositeResult``` query result objects
 - ORM support for java.io.Serializable and arbitrary classes as JSON
@@ -39,21 +42,6 @@ Below is a list of default annotations used by the ```DefaultSchemaGenerator```.
 - ```@ToVertex``` defines the ending (or IN) vertex of a ```@Edge```
 
 
-## Neo4j Schema Generation
-
-Below is a list of supported annotations used by the ```Neo4jSchemaGenerator```. These annotations are part of the [spring-data-neo4j](http://docs.spring.io/spring-data/neo4j/docs/current/reference/html/#reference_programming-model_annotations) platform.
-
-
-- ```@NodeEntity``` maps an ```Object``` to a ```Vertex```
-- ```@RelationshipEntity``` maps an ```Object``` to an ```Edge```
-- ```@GraphId``` maps an instance variable to the vertex or edge ID
-- ```@Indexed``` used for indexing properties
-- ```@GraphProperty``` maps an instance variable to a vertex property (optional, only required if you want to name it differently)
-- ```@RelatedTo``` creates a link from this vertex to the referenced ```Object```'s vertex or ```Collection```'s verticies using the name of the field as default or the optional ```type``` parameter as the link label
-- ```@RelatedToVia``` creates an ```Edge``` based the the referenced ```Object``` or ```Collection``` which must be a ```@RelationshipEntity```
-- ```@StartNode``` defines the starting (or OUT) vertex of a ```@RelationshipEntity```
-- ```@EndNode``` defines the ending (or IN) vertex of a ```@RelationshipEntity```
-
 ## JPA Schema Generation
 
 Below is a list of supported annotations used by the ```JpaSchemaGenerator```:
@@ -75,66 +63,19 @@ Below is a list of supported annotations used by the ```JpaSchemaGenerator```:
 
 Currenlty only SNAPSHOT builds are being uploaded to sonatype so you will need to add ```https://oss.sonatype.org/content/repositories/snapshots/``` repository URL to your build configuration.
 
-#### Maven
-```
-<repositories>
-    <repository>
-        <id>spring.data.gremlin.snapshot</id>
-        <name>Spring Data Gremlin SNAPHSHOT</name>
-        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-</repositories>
-```
 
-#### Gradle
-```
-repositories {
-    //...
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-}
-```
-
-Once you have your build configuration setup you need to add the correct dependencies. To do that you need to decide which database and schema generator you want to use. If you are starting from scratch, then the default schema generator is for you.
 
 #### Database dependency
-**OrientDB** - com.github.gjrwebber:spring-data-gremlin-orientdb:0.1.0-SNAPSHOT  
-**TitanDB** - com.github.gjrwebber:spring-data-gremlin-titan:0.1.0-SNAPSHOT
+**JanusDB** - com.github.gjrwebber:spring-data-gremlin-titan:0.1.0-SNAPSHOT
 
 #### Schema generator dependency
 **Default** - No further dependency  
 **JPA** - com.github.gjrwebber:spring-data-gremlin-schemagen-jpa:0.1.0-SNAPSHOT  
-**Neo4j** - com.github.gjrwebber:spring-data-gremlin-schemagen-neo4j:0.1.0-SNAPSHOT
 
-#### Maven example
-
-Using OrientDB database with Neo4j schema generator:
-
-```
-<dependency>
-    <groupId>com.github.gjrwebber</groupId>
-    <artifactId>spring-data-gremlin-orientdb</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-</dependency>
-<dependency>
-    <groupId>com.github.gjrwebber</groupId>
-    <artifactId>spring-data-gremlin-schemagen-neo4j</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-</dependency>
-```
-
-#### Gradle example
-
-Using TitanDB with default schema generator:
-
-```
-compile("com.github.gjrwebber:spring-data-gremlin-titan:0.1.0-SNAPSHOT")
-```
 
 ### Create you domain model
 
-Create your domain objects. I have used the default generator for mapping the schema, but you can also use [spring-data-neo4j](http://docs.spring.io/spring-data/neo4j/docs/current/reference/html/#reference_programming-model_annotations) or JPA annotations if you wish.
-
-**Note:** Have a look at [the test subproject](https://github.com/gjrwebber/spring-data-gremlin/tree/develop/spring-data-gremlin-test) for more examples.
+**Note:** Have a look at [the test subproject](https://github.com/fbalicchia/spring-data-gremlin) for more examples.
 
 #### Person
 
@@ -381,10 +322,6 @@ public class Configuration {
 - Lazy fetching
 - Index for multiple properties
 - Allow for IDs other than String
-- Repository definitions using ~~[Neo4j](http://docs.spring.io/spring-data/neo4j/docs/current/reference/html/#reference_programming-model_annotations)~~, [Frames](http://frames.tinkerpop.com) or ~~some other custom implementation~~.
 - More [Blueprints](https://github.com/tinkerpop/blueprints/wiki) implementations ([Neo4j](https://en.wikipedia.org/wiki/Neo4j), [ArangoDB](https://www.arangodb.com), [Blazegraph](http://www.blazegraph.com/bigdata), etc.)
-- Migrate to [Tinkerpop 3.0](http://www.tinkerpop.com/docs/3.0.0.M1/)
 
-##Acknowledgement
-This project would not have been possible without the hard work done by the [spring-data-orientdb](https://github.com/orientechnologies/spring-data-orientdb) team. A lot of code and concepts were reused and reshaped. Thanks.
 
