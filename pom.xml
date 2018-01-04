@@ -18,6 +18,7 @@
 
   <packaging>pom</packaging>
 
+
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
@@ -25,6 +26,12 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
+  <parent>
+    <groupId>org.springframework.data.build</groupId>
+    <artifactId>spring-data-parent</artifactId>
+    <version>2.0.2.RELEASE</version>
+  </parent>
 
   <properties>
     <java.version>1.8</java.version>
@@ -42,6 +49,7 @@
 
 
   <build>
+    <!-- Tatami must be configured at the root context (/) of the application server -->
     <finalName>root</finalName>
     <resources>
       <resource>
