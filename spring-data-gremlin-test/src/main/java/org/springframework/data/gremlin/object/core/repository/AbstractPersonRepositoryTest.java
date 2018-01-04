@@ -427,33 +427,15 @@ public abstract class AbstractPersonRepositoryTest extends BaseRepositoryTest
     {
         Person graham = repository.findByFirstName("Graham").get(0);
         assertEquals(5, graham.getLocations().size());
-
         List<Located> locations = new ArrayList<Located>(graham.getLocations());
-        Collections.sort(locations, new Comparator<Located>()
-        {
-            @Override
-            public int compare(Located o1, Located o2)
-            {
-                return (int) (o1.getLocation().getLatitude() - o2.getLocation().getLatitude());
-            }
-        });
+        locations.sort((Located o1, Located o2)-> (int) (o1.getLocation().getLatitude() - o2.getLocation().getLatitude()));
         assertEquals(151, locations.get(0).getLocation().getLongitude(), 0.0001);
-
         locations.get(0).getLocation().setLongitude(100);
         repository.save(graham);
-
         graham = repository.findByFirstName("Graham").get(0);
         assertEquals(5, graham.getLocations().size());
-
-        locations = new ArrayList<Located>(graham.getLocations());
-        Collections.sort(locations, new Comparator<Located>()
-        {
-            @Override
-            public int compare(Located o1, Located o2)
-            {
-                return (int) (o1.getLocation().getLatitude() - o2.getLocation().getLatitude());
-            }
-        });
+        locations = new ArrayList<>(graham.getLocations());
+        locations.sort((Located o1, Located o2)-> (int) (o1.getLocation().getLatitude() - o2.getLocation().getLatitude()));
         assertEquals(100, locations.get(0).getLocation().getLongitude(), 0.0001);
 
     }
@@ -495,7 +477,7 @@ public abstract class AbstractPersonRepositoryTest extends BaseRepositoryTest
 
         List<Located> locations = new ArrayList<Located>(graham.getLocations());
         locations.remove(0);
-        graham.setLocations(new HashSet<Located>(locations));
+        graham.setLocations(new HashSet<>(locations));
         repository.save(graham);
 
         graham = repository.findByFirstName("Graham").get(0);

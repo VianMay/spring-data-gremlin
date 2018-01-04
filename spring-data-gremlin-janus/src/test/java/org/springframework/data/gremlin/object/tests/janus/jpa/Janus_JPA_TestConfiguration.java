@@ -27,9 +27,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import java.io.File;
 import java.io.IOException;
 
-/**
- * Created by mmichail (zifnab87) on 13/04/17 based on gman's titan files.
- */
 
 @Configuration
 @EnableTransactionManagement
@@ -46,9 +43,6 @@ public class Janus_JPA_TestConfiguration {
         }
         JanusGremlinGraphFactory factory = new JanusGremlinGraphFactory();
         factory.setUrl("inmemory");
-        //        factory.setUsername("admin");
-        //        factory.setPassword("admin");
-
         return factory;
     }
 

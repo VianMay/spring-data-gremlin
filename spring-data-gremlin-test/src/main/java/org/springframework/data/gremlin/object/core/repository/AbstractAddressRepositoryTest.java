@@ -1,9 +1,9 @@
 package org.springframework.data.gremlin.object.core.repository;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.collections4.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.gremlin.object.core.domain.Address;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public abstract class AbstractAddressRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void should_find_addresses() throws Exception {
-        List<Address> addresses = new ArrayList<Address>();
+        List<Address> addresses = Lists.newArrayList();
 
         CollectionUtils.addAll(addresses, addressRepository.findAll());
         assertNotNull(addresses);

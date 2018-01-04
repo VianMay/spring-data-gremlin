@@ -22,59 +22,62 @@ import org.springframework.data.gremlin.tx.janus.JanusGremlinGraphFactory;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
-/**
- * Created by mmichail (zifnab87) on 13/04/17 based on gman's titan files.
- */
 
 @Configuration
 @EnableTransactionManagement
 @EnableGremlinRepositories(basePackages = "org.springframework.data.gremlin.object.core", excludeFilters = {
-        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = GremlinRepositoryWithNativeSupport.class) }, repositoryFactoryBeanClass = GremlinRepositoryFactoryBean.class)
-public class Janus_Core_TestConfiguration {
+    @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = GremlinRepositoryWithNativeSupport.class) }, repositoryFactoryBeanClass = GremlinRepositoryFactoryBean.class)
+public class Janus_Core_TestConfiguration
+{
 
     @Bean
-    public JanusGremlinGraphFactory factory() {
+    public JanusGremlinGraphFactory factory()
+    {
         JanusGremlinGraphFactory factory = new JanusGremlinGraphFactory();
         factory.setUrl("inmemory");
-
-        //        factory.setUsername("admin");
-        //        factory.setPassword("admin");
 
         return factory;
     }
 
     @Bean
-    public GremlinSchemaFactory mapperFactory() {
+    public GremlinSchemaFactory mapperFactory()
+    {
         return new GremlinSchemaFactory();
     }
 
     @Bean
-    public GremlinTransactionManager transactionManager() {
+    public GremlinTransactionManager transactionManager()
+    {
         return new GremlinTransactionManager(factory());
     }
 
     @Bean
-    public SchemaWriter schemaWriter() {
+    public SchemaWriter schemaWriter()
+    {
         return new JanusSchemaWriter();
     }
 
     @Bean
-    public GremlinGraphAdapter graphAdapter() {
+    public GremlinGraphAdapter graphAdapter()
+    {
         return new JanusGraphAdapter();
     }
 
     @Bean
-    public static GremlinBeanPostProcessor tinkerpopSchemaManager() {
+    public static GremlinBeanPostProcessor tinkerpopSchemaManager()
+    {
         return new GremlinBeanPostProcessor("org.springframework.data.gremlin.object.core.domain");
     }
 
     @Bean
-    public GremlinRepositoryContext databaseContext(GremlinGraphFactory graphFactory, GremlinGraphAdapter graphAdapter, GremlinSchemaFactory schemaFactory, SchemaWriter schemaWriter) {
+    public GremlinRepositoryContext databaseContext(GremlinGraphFactory graphFactory, GremlinGraphAdapter graphAdapter, GremlinSchemaFactory schemaFactory, SchemaWriter schemaWriter)
+    {
         return new GremlinRepositoryContext(graphFactory, graphAdapter, schemaFactory, schemaWriter, JanusGremlinRepository.class);
     }
 
     @Bean
-    public TestService testService() {
+    public TestService testService()
+    {
         return new TestService();
     }
 }
