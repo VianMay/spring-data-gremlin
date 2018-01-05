@@ -73,9 +73,11 @@ public class StringBasedGremlinQuery extends AbstractGremlinQuery {
 
         ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
         Pageable pageable = accessor.getPageable();
-        if (pageable != null && !ignorePaging) {
+        if (pageable != null && !ignorePaging && pageable.isPaged()) {
             queryString = String.format("%s.range(%d, %d)", queryString, pageable.getOffset(), pageable.getOffset() + pageable.getPageSize() );
         }
+
+        logger.info("query {} ", queryString);
 
         try {
 

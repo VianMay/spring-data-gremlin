@@ -9,6 +9,7 @@ import org.springframework.data.gremlin.object.core.domain.Likes;
 import org.springframework.data.gremlin.object.core.domain.Located;
 import org.springframework.data.gremlin.object.core.domain.Location;
 
+import javax.script.ScriptException;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
@@ -92,7 +93,7 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest
     }
 
     @Test
-    public void should_find_by_query()
+    public void should_find_by_query() throws ScriptException
     {
         Likes likes = new Likes(lara, graham);
         likesRepository.save(likes);
