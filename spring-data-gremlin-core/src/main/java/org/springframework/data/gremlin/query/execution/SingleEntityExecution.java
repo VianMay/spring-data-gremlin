@@ -10,40 +10,45 @@ import org.springframework.data.repository.query.DefaultParameters;
 
 import java.util.*;
 
-/**
- * Executes the query to return a single entity.
- *
- * @author Gman
- */
+
 @SuppressWarnings("unchecked")
-public class SingleEntityExecution extends AbstractGremlinExecution {
+public class SingleEntityExecution extends AbstractGremlinExecution
+{
 
     /**
      * Instantiates a new {@link CountExecution}.
      */
-    public SingleEntityExecution(GremlinSchemaFactory schemaFactory, DefaultParameters parameters, GremlinGraphAdapter graphAdapter) {
+    public SingleEntityExecution(GremlinSchemaFactory schemaFactory, DefaultParameters parameters, GremlinGraphAdapter graphAdapter)
+    {
         super(schemaFactory, parameters, graphAdapter);
     }
 
     @Override
-    protected Object doExecute(AbstractGremlinQuery query, Object[] values) {
+    protected Object doExecute(AbstractGremlinQuery query, Object[] values)
+    {
         Class<?> mappedType = query.getQueryMethod().getReturnedObjectType();
 
-        List<Vertex> vertices = ((GraphTraversal)query.runQuery(parameters, values)).toList();
+        List<Vertex> vertices = ((GraphTraversal) query.runQuery(parameters, values)).toList();
         Vertex vertex;
-        if (vertices.size() > 1) {
+        if (vertices.size() > 1)
+        {
             throw new IllegalArgumentException("The query resulted in multiple Vertices. Expected only one result for this Execution.");
         }
-        else if (vertices.size() == 1) {
+        else if (vertices.size() == 1)
+        {
             vertex = vertices.get(0);
         }
-        else {
+        else
+        {
             return null;
         }
 
-        if (mappedType.isAssignableFrom(Map.class)) {
+        if (mappedType.isAssignableFrom(Map.class))
+        {
             return elementToMap(vertex);
-        } else {
+        }
+        else
+        {
             GremlinSchema mapper = schemaFactory.getSchema(mappedType);
             return mapper.loadFromGraph(graphAdapter, vertex);
         }

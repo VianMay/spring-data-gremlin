@@ -2,7 +2,6 @@ package org.springframework.data.gremlin.object.tests.janus.core;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.gremlin.config.EnableGremlinRepositories;
 import org.springframework.data.gremlin.object.core.TestService;
@@ -22,8 +21,6 @@ import org.springframework.data.gremlin.tx.janus.JanusGremlinGraphFactory;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 
-
-@Configuration
 @EnableTransactionManagement
 @EnableGremlinRepositories(basePackages = "org.springframework.data.gremlin.object.core", excludeFilters = {
     @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = GremlinRepositoryWithNativeSupport.class) }, repositoryFactoryBeanClass = GremlinRepositoryFactoryBean.class)
@@ -34,8 +31,8 @@ public class Janus_Core_TestConfiguration
     public JanusGremlinGraphFactory factory()
     {
         JanusGremlinGraphFactory factory = new JanusGremlinGraphFactory();
-        factory.setUrl("inmemory");
-
+        //factory.setUrl("inmemory");
+        factory.setPath("/Users/fbalicchia/Projects/spring-data-gremlin/spring-data-gremlin-janus/target/test-classes/janusgraph-cassandra-lucene.properties");
         return factory;
     }
 

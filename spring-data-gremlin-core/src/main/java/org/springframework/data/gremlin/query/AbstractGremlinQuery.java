@@ -8,25 +8,32 @@ import org.springframework.data.repository.query.RepositoryQuery;
 
 import java.util.Map;
 
+
 /**
  * The base class to implement {@link RepositoryQuery}s for Gremlin.
  *
  * @author Gman
  */
-public abstract class AbstractGremlinQuery implements RepositoryQuery {
+public abstract class AbstractGremlinQuery implements RepositoryQuery
+{
 
-    /** The query method. */
+    /**
+     * The query method.
+     */
     protected final GremlinQueryMethod method;
+
     protected final GremlinSchemaFactory schemaFactory;
+
     protected final GremlinGraphAdapter graphAdapter;
 
     /**
      * Instantiates a new {@link AbstractGremlinQuery}.
      *
-     * @param method the query method
+     * @param method       the query method
      * @param graphAdapter
      */
-    public AbstractGremlinQuery(GremlinSchemaFactory schemaFactory, GremlinQueryMethod method, GremlinGraphAdapter graphAdapter) {
+    public AbstractGremlinQuery(GremlinSchemaFactory schemaFactory, GremlinQueryMethod method, GremlinGraphAdapter graphAdapter)
+    {
         super();
         this.schemaFactory = schemaFactory;
         this.method = method;
@@ -36,7 +43,8 @@ public abstract class AbstractGremlinQuery implements RepositoryQuery {
     /* (non-Javadoc)
      * @see org.springframework.data.repository.query.RepositoryQuery#getQueryMethod()
      */
-    public GremlinQueryMethod getQueryMethod() {
+    public GremlinQueryMethod getQueryMethod()
+    {
         return method;
     }
 
@@ -44,7 +52,8 @@ public abstract class AbstractGremlinQuery implements RepositoryQuery {
      * @see org.springframework.data.repository.query.RepositoryQuery#execute(java.lang.Object[])
      */
     @Override
-    public Object execute(Object[] parameters) {
+    public Object execute(Object[] parameters)
+    {
         return doExecute(getExecution(), parameters);
     }
 
@@ -55,7 +64,8 @@ public abstract class AbstractGremlinQuery implements RepositoryQuery {
      * @param values    the values
      * @return the object
      */
-    protected Object doExecute(AbstractGremlinExecution execution, Object[] values) {
+    protected Object doExecute(AbstractGremlinExecution execution, Object[] values)
+    {
         return execution.execute(this, values);
     }
 
@@ -67,7 +77,8 @@ public abstract class AbstractGremlinQuery implements RepositoryQuery {
      * @return the OSQL query
      */
     @SuppressWarnings("rawtypes")
-    public Object runQuery(DefaultParameters parameters, Object[] values) {
+    public Object runQuery(DefaultParameters parameters, Object[] values)
+    {
         return runQuery(parameters, values, false);
     }
 
@@ -79,7 +90,8 @@ public abstract class AbstractGremlinQuery implements RepositoryQuery {
      * @return the OSQL query
      */
     @SuppressWarnings("rawtypes")
-    public Object runQuery(DefaultParameters parameters, Object[] values, boolean ignorePaging) {
+    public Object runQuery(DefaultParameters parameters, Object[] values, boolean ignorePaging)
+    {
         return doRunQuery(parameters, values, ignorePaging);
     }
 
@@ -99,22 +111,36 @@ public abstract class AbstractGremlinQuery implements RepositoryQuery {
      *
      * @return the execution
      */
-    protected AbstractGremlinExecution getExecution() {
+    protected AbstractGremlinExecution getExecution()
+    {
         final DefaultParameters parameters = (DefaultParameters) method.getParameters();
 
-        if (method.isCollectionQuery()) {
+        if (method.isCollectionQuery())
+        {
             return new CollectionExecution(schemaFactory, parameters, graphAdapter);
-        } else if (method.isPageQuery()) {
+        }
+        else if (method.isPageQuery())
+        {
             return new CollectionExecution(schemaFactory, parameters, graphAdapter);
-        } else if (method.isQueryForEntity()) {
+        }
+        else if (method.isQueryForEntity())
+        {
             return new SingleEntityExecution(schemaFactory, parameters, graphAdapter);
-        } else if (isModifyingQuery()) {
+        }
+        else if (isModifyingQuery())
+        {
             return new ModifyExecution(schemaFactory, parameters, graphAdapter);
-        } else if (isCountQuery()) {
+        }
+        else if (isCountQuery())
+        {
             return new CountExecution(schemaFactory, parameters, graphAdapter);
-        } else if (isMapQuery()) {
+        }
+        else if (isMapQuery())
+        {
             return new MapExecution(schemaFactory, parameters, graphAdapter);
-        } else if (isCompositeQuery()) {
+        }
+        else if (isCompositeQuery())
+        {
             return new CompositeExecution(schemaFactory, parameters, graphAdapter);
         }
 
@@ -131,11 +157,13 @@ public abstract class AbstractGremlinQuery implements RepositoryQuery {
      */
     protected abstract boolean isModifyingQuery();
 
-    private boolean isMapQuery() {
+    private boolean isMapQuery()
+    {
         return method.getReturnedObjectType().isAssignableFrom(Map.class);
     }
 
-    private boolean isCompositeQuery() {
+    private boolean isCompositeQuery()
+    {
         return method.getReturnedObjectType() == CompositeResult.class;
     }
 }

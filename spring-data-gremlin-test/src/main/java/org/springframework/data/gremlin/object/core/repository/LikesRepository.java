@@ -2,10 +2,8 @@ package org.springframework.data.gremlin.object.core.repository;
 
 import org.springframework.data.gremlin.annotation.Query;
 import org.springframework.data.gremlin.object.core.domain.Likes;
-import org.springframework.data.gremlin.object.core.domain.Person;
 import org.springframework.data.gremlin.repository.GremlinRepository;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -19,7 +17,14 @@ public interface LikesRepository extends GremlinRepository<Likes> {
     @Query(value = "graph.E().has('date')")
     List<Likes> findByHasDate();
 
-    @Query(value = "graph.V().has('firstName', ?).outE('Likes').as('x').inV.filter{it.firstName == ?}.back('x')")
+
+    // g.V().has('firstName','Vanja').outE('Likes').inV().filter{it.get().value('firstName') == 'Lara'} query OK
+    //Vanja-Likes->Lara
+    //==>Graham
+    //==>Jake
+    //==>Lara
+    //@Query(value = "graph.V().has('firstName', ?).outE('Likes').inV().filter{it.firstName == ?}.back('x')")
+    @Query(value= "graph.V().has('firstName','Vanja').outE('Likes').inV().filter{it.get().value('firstName') == 'Lara'}")
     List<Likes> findByLiking(String liker, String liked);
 
 

@@ -1,5 +1,6 @@
 package org.springframework.data.gremlin.object.core.domain;
 
+import com.google.common.collect.Sets;
 import org.springframework.data.gremlin.annotation.*;
 
 import java.util.HashMap;
@@ -173,7 +174,7 @@ public class Person extends Bipod<Area> {
 
     public Set<Likes> getLikes() {
         if (likes == null) {
-            likes = new HashSet<Likes>();
+            likes = Sets.newHashSet();
         }
         return likes;
     }
@@ -237,12 +238,16 @@ public class Person extends Bipod<Area> {
 
     @Override
     public boolean equals(Object o) {
+
         if (this == o) {
             return true;
         }
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
+        //return EqualsBuilder();
+
 
         Person person = (Person) o;
         if (getId() != null ? !getId().equals(person.getId()) : person.getId() != null) {

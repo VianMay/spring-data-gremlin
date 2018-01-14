@@ -24,7 +24,8 @@ import javax.script.ScriptException;
  *
  * @author Gman
  */
-public class StringBasedGremlinQuery extends AbstractGremlinQuery {
+public class StringBasedGremlinQuery extends AbstractGremlinQuery
+{
 
     private static final Logger logger = LoggerFactory.getLogger(StringBasedGremlinQuery.class);
 
@@ -36,7 +37,8 @@ public class StringBasedGremlinQuery extends AbstractGremlinQuery {
 
     private boolean modifyingQuery;
 
-    public StringBasedGremlinQuery(GremlinGraphFactory dbf, GremlinSchemaFactory schemaFactory, GremlinGraphAdapter graphAdapter, String query, GremlinQueryMethod method) {
+    public StringBasedGremlinQuery(GremlinGraphFactory dbf, GremlinSchemaFactory schemaFactory, GremlinGraphAdapter graphAdapter, String query, GremlinQueryMethod method)
+    {
         super(schemaFactory, method, graphAdapter);
         this.dbf = dbf;
         this.queryString = query;
@@ -46,7 +48,8 @@ public class StringBasedGremlinQuery extends AbstractGremlinQuery {
 
     @Override
     @SuppressWarnings("rawtypes")
-    protected Object doRunQuery(DefaultParameters parameters, Object[] values, boolean ignorePaging) {
+    protected Object doRunQuery(DefaultParameters parameters, Object[] values, boolean ignorePaging)
+    {
 
         ScriptEngine engine = new GremlinGroovyScriptEngine();
         Bindings bindings = engine.createBindings();
@@ -57,15 +60,19 @@ public class StringBasedGremlinQuery extends AbstractGremlinQuery {
 
         String queryString = this.queryString;
 
-        for (Parameter param : parameters.getBindableParameters()) {
+        for (Parameter param : parameters.getBindableParameters())
+        {
             String paramName = param.getName().orElse(null);
             String placeholder = param.getPlaceholder();
             Object val = values[param.getIndex()];
-            if (paramName == null) {
+            if (paramName == null)
+            {
                 placeholder = "placeholder_" + param.getIndex();
                 queryString = queryString.replaceFirst("\\?", placeholder);
                 bindings.put(placeholder, val);
-            } else {
+            }
+            else
+            {
                 queryString = queryString.replaceFirst(placeholder, paramName);
                 bindings.put(paramName, val);
             }
@@ -73,31 +80,38 @@ public class StringBasedGremlinQuery extends AbstractGremlinQuery {
 
         ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
         Pageable pageable = accessor.getPageable();
-        if (pageable != null && !ignorePaging && pageable.isPaged()) {
-            queryString = String.format("%s.range(%d, %d)", queryString, pageable.getOffset(), pageable.getOffset() + pageable.getPageSize() );
+        if (pageable != null && !ignorePaging && pageable.isPaged())
+        {
+            queryString = String.format("%s.range(%d, %d)", queryString, pageable.getOffset(), pageable.getOffset() + pageable.getPageSize());
         }
 
         logger.info("query {} ", queryString);
 
-        try {
+        try
+        {
 
-            if (logger.isInfoEnabled()) {
+            if (logger.isInfoEnabled())
+            {
                 logger.info(GraphUtil.queryToString(graph, (GraphTraversal) engine.eval(queryString, bindings)));
             }
 
             return engine.eval(queryString, bindings);
-        } catch (ScriptException e) {
+        }
+        catch (ScriptException e)
+        {
             throw new IllegalArgumentException(String.format("Could not evaluate Gremlin query String %s. Error: %s ", queryString, e.getMessage()), e);
         }
     }
 
     @Override
-    protected boolean isCountQuery() {
+    protected boolean isCountQuery()
+    {
         return this.countQuery;
     }
 
     @Override
-    protected boolean isModifyingQuery() {
+    protected boolean isModifyingQuery()
+    {
         return this.modifyingQuery;
     }
 
