@@ -24,7 +24,7 @@ public interface LikesRepository extends GremlinRepository<Likes> {
     //==>Jake
     //==>Lara
     //@Query(value = "graph.V().has('firstName', ?).outE('Likes').inV().filter{it.firstName == ?}.back('x')")
-    @Query(value= "graph.V().has('firstName','Vanja').outE('Likes').inV().filter{it.get().value('firstName') == 'Lara'}")
+    @Query(value= "graph.V().has('firstName','Vanja').outE('Likes').inV().filter{it.get().value('firstName') == 'Lara'}.outE()")
     List<Likes> findByLiking(String liker, String liked);
 
 
