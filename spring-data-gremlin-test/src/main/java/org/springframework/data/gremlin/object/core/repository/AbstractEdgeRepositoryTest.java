@@ -9,7 +9,6 @@ import org.springframework.data.gremlin.object.core.domain.Likes;
 import org.springframework.data.gremlin.object.core.domain.Located;
 import org.springframework.data.gremlin.object.core.domain.Location;
 
-import javax.script.ScriptException;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
@@ -77,7 +76,6 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest
         List<Located> newLocated = Lists.newArrayList();
         CollectionUtils.addAll(newLocated, locatedRepository.findAll());
         assertEquals(count + 1, newLocated.size());
-
     }
 
     @Test
@@ -93,16 +91,14 @@ public abstract class AbstractEdgeRepositoryTest extends BaseRepositoryTest
     }
 
     @Test
-    public void should_find_by_query() throws ScriptException
+    public void should_find_by_query()
     {
         Likes likes = new Likes(lara, graham);
         likesRepository.save(likes);
         /*Iterator<Likes> query = likesRepository.findByLiking("Lara", "Graham").iterator();*/
 
         List<Likes> byLiking = likesRepository.findByLiking("Lara", "Graham");
-
-      /*  assertTrue(query.hasNext());
-        assertEquals(likes, query.next());
-        assertFalse(query.hasNext());*/
+        assertEquals(1, byLiking.size());
+        assertEquals(likes, byLiking.get(0));
     }
 }

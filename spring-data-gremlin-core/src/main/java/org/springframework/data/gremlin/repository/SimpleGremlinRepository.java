@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import org.springframework.util.StringUtils;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -50,7 +51,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
 
 
     @Transactional
-    private Element create(Graph graph, final T object, Object... noCascade) {
+    protected Element create(Graph graph, final T object, Object... noCascade) {
         Element element;
         if (schema.isVertexSchema()) {
             element = graphAdapter.createVertex(graph, schema.getClassName());
@@ -108,7 +109,9 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
     }
 
     @Override
-    public <S extends T> S save(S entity) {
+    public <S extends T> S save(S entity)
+    {
+        Objects.requireNonNull(entity);
         return save(entity, new Object[0]);
     }
 
@@ -116,6 +119,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
     @Override
     public <S extends T> Iterable<S> saveAll(Iterable<S> entities)
     {
+        Objects.requireNonNull(entities);
         for (S s : entities) {
             save(s);
         }
@@ -125,6 +129,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
     @Override
     public Optional<T> findById(String id)
     {
+        Objects.requireNonNull(id);
         T object = null;
         Element element;
         if (schema.isVertexSchema()) {
@@ -139,12 +144,13 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
             object = schema.loadFromGraph(graphAdapter, element);
         }
 
-        return Optional.of(object);
+        return Optional.ofNullable(object);
     }
 
     @Override
-    public boolean existsById(String s)
+    public boolean existsById(String id)
     {
+        Objects.requireNonNull(id);
         return false;
     }
 
@@ -183,7 +189,7 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
     @Override
     public Iterable<T> findAllById(Iterable<String> iterable)
     {
-        Set<T> objects = new HashSet<T>();
+        Set<T> objects = new HashSet<>();
         for (String id : iterable) {
             objects.add(findById(id).orElse(null));
         }
@@ -200,9 +206,10 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
     @Override
     public void deleteById(String id)
     {
+        Objects.requireNonNull(id);
         if (schema.isVertexSchema()) {
             Vertex v = graphAdapter.findVertexById(id);
-            v.remove();;
+            v.remove();
         } else if (schema.isEdgeSchema()) {
             Edge v = graphAdapter.findEdgeById(id);
             v.remove();
@@ -237,6 +244,4 @@ public class SimpleGremlinRepository<T> implements GremlinRepository<T> {
     public Page<T> findAll(Pageable pageable) {
         throw new NotImplementedException("Deleting all vertices in Gremlin has not been implemented.");
     }
-
-
 }

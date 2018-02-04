@@ -273,7 +273,7 @@ public abstract class AbstractPersonRepositoryTest extends BaseRepositoryTest {
         List<Person> persons = repository.findByAddress_Area_Name("2043");
         assertEquals(1, persons.size());
         for (Person person : persons) {
-            assertTrue(person.getAddress().getArea().getName().equals("2043"));
+            assertEquals("2043", person.getAddress().getArea().getName());
         }
     }
 
@@ -314,13 +314,8 @@ public abstract class AbstractPersonRepositoryTest extends BaseRepositoryTest {
         assertNotNull(graham);
         assertNotNull(graham.getLocations());
         assertEquals(5, graham.getLocations().size());
-        List<Location> locations = new ArrayList<Location>(graham.getLocations());
-        Collections.sort(locations, new Comparator<Location>() {
-            @Override
-            public int compare(Location o1, Location o2) {
-                return (int) Math.round(o1.getLatitude() - o2.getLatitude());
-            }
-        });
+        List<Location> locations = new ArrayList<>(graham.getLocations());
+        Collections.sort(locations, (o1, o2) -> (int) Math.round(o1.getLatitude() - o2.getLatitude()));
         Location location = locations.get(0);
         assertNotNull(location);
         assertEquals(-33, location.getLatitude(), 0.00001);
@@ -334,13 +329,8 @@ public abstract class AbstractPersonRepositoryTest extends BaseRepositoryTest {
         Person graham = repository.findByFirstName("Graham").get(0);
         assertEquals(5, graham.getLocations().size());
 
-        List<Location> locations = new ArrayList<Location>(graham.getLocations());
-        Collections.sort(locations, new Comparator<Location>() {
-            @Override
-            public int compare(Location o1, Location o2) {
-                return (int) Math.round(o1.getLatitude() - o2.getLatitude());
-            }
-        });
+        List<Location> locations = new ArrayList<>(graham.getLocations());
+        Collections.sort(locations, (o1, o2) -> (int) Math.round(o1.getLatitude() - o2.getLatitude()));
         assertEquals(151, locations.get(0).getLongitude(), 0.0001);
 
         locations.get(0).setLongitude(100);
@@ -349,13 +339,8 @@ public abstract class AbstractPersonRepositoryTest extends BaseRepositoryTest {
         graham = repository.findByFirstName("Graham").get(0);
         assertEquals(5, graham.getLocations().size());
 
-        locations = new ArrayList<Location>(graham.getLocations());
-        Collections.sort(locations, new Comparator<Location>() {
-            @Override
-            public int compare(Location o1, Location o2) {
-                return (int) Math.round(o1.getLatitude() - o2.getLatitude());
-            }
-        });
+        locations = new ArrayList<>(graham.getLocations());
+        Collections.sort(locations, (o1, o2) -> (int) Math.round(o1.getLatitude() - o2.getLatitude()));
         assertEquals(100, locations.get(0).getLongitude(), 0.0001);
 
     }
@@ -373,14 +358,9 @@ public abstract class AbstractPersonRepositoryTest extends BaseRepositoryTest {
 
         graham = repository.findByFirstName("Graham").get(0);
 
-        List<Location> locations = new ArrayList<Location>(graham.getLocations());
+        List<Location> locations = new ArrayList<>(graham.getLocations());
         assertEquals(6, locations.size());
-        Collections.sort(locations, new Comparator<Location>() {
-            @Override
-            public int compare(Location o1, Location o2) {
-                return (int) Math.round(o1.getLatitude() - o2.getLatitude());
-            }
-        });
+        Collections.sort(locations, (o1, o2) -> (int) Math.round(o1.getLatitude() - o2.getLatitude()));
         assertEquals(120, locations.get(0).getLongitude(), 0.0001);
 
     }
@@ -390,14 +370,14 @@ public abstract class AbstractPersonRepositoryTest extends BaseRepositoryTest {
         Person graham = repository.findByFirstName("Graham").get(0);
         assertEquals(5, graham.getLocations().size());
 
-        List<Location> locations = new ArrayList<Location>(graham.getLocations());
+        List<Location> locations = new ArrayList<>(graham.getLocations());
         locations.remove(0);
-        graham.setLocations(new HashSet<Location>(locations));
+        graham.setLocations(new HashSet<>(locations));
         repository.save(graham);
 
         graham = repository.findByFirstName("Graham").get(0);
 
-        locations = new ArrayList<Location>(graham.getLocations());
+        locations = new ArrayList<>(graham.getLocations());
         assertEquals(4, locations.size());
     }
 

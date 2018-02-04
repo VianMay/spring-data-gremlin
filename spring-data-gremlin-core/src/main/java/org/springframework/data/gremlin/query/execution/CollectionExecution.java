@@ -48,7 +48,6 @@ public class CollectionExecution extends AbstractGremlinExecution
         if (mappedType.isAssignableFrom(Map.class))
         {
             buildMapList(elements, objects);
-
         }
         else if (mappedType == CompositeResult.class)
         {
@@ -64,10 +63,10 @@ public class CollectionExecution extends AbstractGremlinExecution
 
         ParametersParameterAccessor accessor = new ParametersParameterAccessor(parameters, values);
         Pageable pageable = accessor.getPageable();
-        if (pageable != null)
+        if (pageable.isPaged())
         {
             long total = (Long) new CountExecution(schemaFactory, parameters, graphAdapter).doExecute(query, values);
-            return new PageImpl<Object>(objects, pageable, total);
+            return new PageImpl<>(objects, pageable, total);
         }
 
         return objects;

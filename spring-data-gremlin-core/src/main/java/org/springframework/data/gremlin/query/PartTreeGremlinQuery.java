@@ -59,7 +59,7 @@ public class PartTreeGremlinQuery extends AbstractGremlinQuery {
 
         GraphTraversal pipeline = creator.createQuery();
         Pageable pageable = accessor.getPageable();
-        if (pageable != null && !ignorePaging) {
+        if (pageable.isPaged() && !ignorePaging) {
             return pipeline.range(pageable.getOffset(), pageable.getOffset() + pageable.getPageSize());
         }
         return pipeline;

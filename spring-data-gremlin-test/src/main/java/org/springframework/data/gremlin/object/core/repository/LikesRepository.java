@@ -11,7 +11,6 @@ import java.util.List;
  */
 public interface LikesRepository extends GremlinRepository<Likes> {
 
-
     List<Likes> findByPerson1_FirstName(String firstName);
 
     @Query(value = "graph.E().has('date')")
@@ -26,7 +25,4 @@ public interface LikesRepository extends GremlinRepository<Likes> {
     //@Query(value = "graph.V().has('firstName', ?).outE('Likes').inV().filter{it.firstName == ?}.back('x')")
     @Query(value= "graph.V().has('firstName','Vanja').outE('Likes').inV().filter{it.get().value('firstName') == 'Lara'}.outE()")
     List<Likes> findByLiking(String liker, String liked);
-
-
-
 }

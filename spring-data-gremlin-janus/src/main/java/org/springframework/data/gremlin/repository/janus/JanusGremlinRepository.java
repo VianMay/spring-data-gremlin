@@ -1,7 +1,6 @@
 package org.springframework.data.gremlin.repository.janus;
 
 import org.janusgraph.core.JanusGraph;
-import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -32,17 +31,16 @@ public class JanusGremlinRepository<T> extends SimpleGremlinRepository<T> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JanusGremlinRepository.class);
 
-    JanusGremlinGraphFactory graphFactory;
+    private JanusGremlinGraphFactory graphFactory;
 
     public JanusGremlinRepository(GremlinGraphFactory dbf, GremlinGraphAdapter graphAdapter, GremlinSchema<T> mapper) {
         super(dbf, graphAdapter, mapper);
         this.graphFactory = (JanusGremlinGraphFactory) dbf;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     protected Vertex createVertex(Graph graph) {
-        Vertex vertex = ((JanusGraph) graph).addVertex(schema.getClassName());
-        return vertex;
+        return ((JanusGraph) graph).addVertex(schema.getClassName());
     }
 
     @Override
@@ -54,6 +52,7 @@ public class JanusGremlinRepository<T> extends SimpleGremlinRepository<T> {
                 count++;
             }
         } catch (Exception e) {
+            return 0;
         }
         return count;
     }
@@ -91,7 +90,6 @@ public class JanusGremlinRepository<T> extends SimpleGremlinRepository<T> {
     }
 
     public Iterable<Element> findAllElementsForSchema() {
-
         if (schema.isVertexSchema()) {
             return findAllVerticiesForSchema();
         } else if (schema.isEdgeSchema()) {
@@ -102,19 +100,10 @@ public class JanusGremlinRepository<T> extends SimpleGremlinRepository<T> {
     }
 
     public Iterable<Element> findAllVerticiesForSchema() {
-        List<Element> result = new ArrayList<>();
-        for (Vertex vertex : graphFactory.graph().traversal().V().hasLabel(schema.getClassName()).toList()) {
-            result.add(vertex);
-        }
-        return result;
+        return new ArrayList<>(graphFactory.graph().traversal().V().hasLabel(schema.getClassName()).toList());
     }
 
     public Iterable<Element> findAllEdgesForSchema() {
-        List<Element> result = new ArrayList<>();
-        for (Edge edge : graphFactory.graph().traversal().E().hasLabel(schema.getClassName()).toList()) {
-            result.add(edge);
-        }
-        return result;
+        return new ArrayList<>(graphFactory.graph().traversal().E().hasLabel(schema.getClassName()).toList());
     }
-
 }
